@@ -1,81 +1,110 @@
+/* ── Products · Ink-wash Style ── */
+
 .surface {
-  padding: 1.4rem 0 3.2rem;
+  padding: 2rem 0 4rem;
 }
 
 .wrap {
   display: grid;
-  gap: 1rem;
+  gap: 1.4rem;
+  max-width: 860px;
+  margin: 0 auto;
 }
 
 .headCard {
-  border: 1px solid rgba(187, 210, 232, 0.84);
-  border-radius: 26px;
-  background: rgba(247, 251, 255, 0.74);
-  padding: 1.6rem;
-  box-shadow: 0 16px 40px rgba(58, 88, 116, 0.08);
-  backdrop-filter: blur(10px);
+  border: 1px solid rgba(180, 170, 155, 0.3);
+  border-radius: 14px;
+  background: rgba(255, 253, 250, 0.92);
+  padding: 2rem 2rem 1.8rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  text-align: center;
 }
 
 .kicker {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: #6f879e;
-  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #999;
+  font-weight: 600;
+  font-family: Georgia, 'Noto Serif SC', serif;
 }
 
 .title {
   margin: 0.6rem 0 0;
-  color: #1f3d56;
+  color: #1a1a1a;
+  font-family: Georgia, 'Noto Serif SC', serif;
+  font-size: 1.8rem;
 }
 
 .subtitle {
-  margin: 0.75rem 0 1rem;
-  color: #4d6780;
+  margin: 0.75rem 0 1.2rem;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.65;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  gap: 1.2rem;
 }
 
 .slotCard {
-  border: 1px solid rgba(186, 208, 229, 0.86);
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.78);
-  padding: 1.2rem;
-  box-shadow: 0 12px 32px rgba(58, 88, 116, 0.07);
+  border: 1px solid rgba(180, 170, 155, 0.3);
+  border-radius: 14px;
+  background: rgba(255, 253, 250, 0.92);
+  padding: 1.4rem;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.slotCard:hover {
+  border-color: rgba(44, 44, 44, 0.2);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
 }
 
 .slotTitle {
   margin: 0;
-  color: #294962;
+  color: #1a1a1a;
   font-size: 1.12rem;
+  font-family: Georgia, 'Noto Serif SC', serif;
 }
 
 .stage {
-  margin: 0.45rem 0 0;
+  margin: 0.5rem 0 0;
   display: inline-block;
-  border-radius: 999px;
-  background: rgba(171, 189, 204, 0.23);
-  color: #5a7084;
-  padding: 0.14rem 0.6rem;
-  font-size: 0.76rem;
-  font-weight: 700;
+  border-radius: 6px;
+  background: rgba(44, 44, 44, 0.06);
+  color: #666;
+  padding: 0.18rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 600;
 }
 
 .note {
   margin: 0.75rem 0 0;
-  color: #4f6980;
+  color: #555;
+  line-height: 1.65;
+  font-size: 0.92rem;
 }
 
 .slotLink {
   display: inline-flex;
   margin-top: 1rem;
   font-weight: 700;
-  color: #1f78b6;
+  color: #2c2c2c;
+  font-family: Georgia, 'Noto Serif SC', serif;
+  text-decoration: none;
+  border-bottom: 1.5px solid rgba(44, 44, 44, 0.25);
+  padding-bottom: 1px;
+  transition: border-color 0.2s;
+}
+
+.slotLink:hover {
+  color: #1a1a1a;
+  border-color: #1a1a1a;
+  text-decoration: none;
 }
 
 @media screen and (max-width: 996px) {
@@ -84,6 +113,6 @@
   }
 
   .headCard {
-    padding: 1.2rem;
+    padding: 1.4rem;
   }
 }
