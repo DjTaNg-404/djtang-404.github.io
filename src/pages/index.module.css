@@ -1,0 +1,255 @@
+.surface {
+  padding: 1.7rem 0 3.4rem;
+}
+
+.shell {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr) 300px;
+  gap: 1rem;
+  align-items: start;
+}
+
+.glassCard {
+  border: 1px solid rgba(187, 210, 232, 0.82);
+  border-radius: 26px;
+  background: rgba(247, 251, 255, 0.72);
+  box-shadow: 0 18px 44px rgba(57, 88, 117, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.profileCard {
+  position: sticky;
+  top: 6.2rem;
+  padding: 1rem;
+}
+
+.profileTop {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.95rem;
+}
+
+.avatarImage {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  object-fit: cover;
+  display: block;
+  border: 1px solid rgba(187, 210, 232, 0.4);
+}
+
+.profileName {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #233f56;
+}
+
+.profileMeta {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: #5f7890;
+}
+
+.socialNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.socialBadge {
+  display: inline-flex;
+  overflow: hidden;
+  border-radius: 6px;
+  text-decoration: none !important;
+  color: #fff !important;
+  font-size: 0.85rem;
+  font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.socialBadge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+  color: #fff !important;
+}
+
+.badgeLabel {
+  background-color: #555555;
+  padding: 0.35rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badgeValue {
+  padding: 0.35rem 0.6rem;
+  font-weight: 600;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+}
+
+.heroCard {
+  padding: 2.1rem 2rem 1.8rem;
+  min-height: 340px;
+}
+
+.kicker {
+  margin: 0;
+  font-size: 0.77rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6c87a0;
+  font-weight: 700;
+}
+
+.heroTitle {
+  margin: 0.65rem 0 0;
+  font-size: clamp(1.9rem, 3.5vw, 2.8rem);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  color: #1f3d56;
+}
+
+.heroSubtitle {
+  margin: 1rem 0 0;
+  max-width: 640px;
+  font-size: 1.02rem;
+  color: #4f6880;
+}
+
+.heroActions {
+  margin-top: 1.35rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.metricGrid {
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.metricCard {
+  border: 1px solid rgba(186, 208, 229, 0.82);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.74);
+  padding: 0.82rem 0.9rem;
+}
+
+.metricLabel {
+  margin: 0;
+  color: #647d95;
+  font-size: 0.8rem;
+}
+
+.metricValue {
+  margin: 0.35rem 0 0;
+  font-size: 0.95rem;
+  color: #21405a;
+  font-weight: 600;
+}
+
+.streamCard {
+  grid-column: 2 / span 2;
+  padding: 1.2rem;
+}
+
+.streamTitle {
+  margin: 0;
+  font-size: 1.08rem;
+  color: #274762;
+}
+
+.streamGrid {
+  margin-top: 0.88rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.streamItem {
+  border: 1px solid rgba(187, 210, 232, 0.86);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 0.9rem;
+}
+
+.streamItemTitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #23435d;
+}
+
+.streamItemDescription {
+  margin: 0.55rem 0 0;
+  min-height: 2.6rem;
+  color: #567086;
+  font-size: 0.9rem;
+}
+
+.streamItemLink {
+  display: inline-block;
+  margin-top: 0.65rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #2179b6;
+  text-decoration: none;
+}
+
+.streamItemLink:hover {
+  text-decoration: underline;
+}
+
+@media screen and (max-width: 1200px) {
+  .shell {
+    grid-template-columns: 248px minmax(0, 1fr);
+  }
+
+  .streamCard {
+    grid-column: 1 / span 2;
+  }
+}
+
+@media screen and (max-width: 996px) {
+  .surface {
+    padding-top: 0.8rem;
+  }
+
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .profileCard {
+    position: static;
+  }
+
+  .heroCard {
+    padding: 1.45rem 1.1rem 1.3rem;
+    min-height: auto;
+  }
+
+  .metricGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .streamCard {
+    grid-column: auto;
+  }
+
+  .streamGrid {
+    grid-template-columns: 1fr;
+  }
+}

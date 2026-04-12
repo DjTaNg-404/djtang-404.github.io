@@ -1,0 +1,89 @@
+.surface {
+  padding: 1.4rem 0 3.2rem;
+}
+
+.wrap {
+  display: grid;
+  gap: 1rem;
+}
+
+.headCard {
+  border: 1px solid rgba(187, 210, 232, 0.84);
+  border-radius: 26px;
+  background: rgba(247, 251, 255, 0.74);
+  padding: 1.6rem;
+  box-shadow: 0 16px 40px rgba(58, 88, 116, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.kicker {
+  margin: 0;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #6f879e;
+  font-weight: 700;
+}
+
+.title {
+  margin: 0.6rem 0 0;
+  color: #1f3d56;
+}
+
+.subtitle {
+  margin: 0.75rem 0 1rem;
+  color: #4d6780;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.slotCard {
+  border: 1px solid rgba(186, 208, 229, 0.86);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 1.2rem;
+  box-shadow: 0 12px 32px rgba(58, 88, 116, 0.07);
+}
+
+.slotTitle {
+  margin: 0;
+  color: #294962;
+  font-size: 1.12rem;
+}
+
+.stage {
+  margin: 0.45rem 0 0;
+  display: inline-block;
+  border-radius: 999px;
+  background: rgba(171, 189, 204, 0.23);
+  color: #5a7084;
+  padding: 0.14rem 0.6rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.note {
+  margin: 0.75rem 0 0;
+  color: #4f6980;
+}
+
+.slotLink {
+  display: inline-flex;
+  margin-top: 1rem;
+  font-weight: 700;
+  color: #1f78b6;
+}
+
+@media screen and (max-width: 996px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .headCard {
+    padding: 1.2rem;
+  }
+}

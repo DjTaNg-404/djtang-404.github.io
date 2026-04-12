@@ -1,0 +1,9 @@
+{
+  "label": "产品文档",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "title": "产品文档",
+    "description": "记录产品介绍、使用说明与系统架构。"
+  }
+}
