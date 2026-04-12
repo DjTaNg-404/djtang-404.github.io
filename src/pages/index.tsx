@@ -1,5 +1,6 @@
 import {type ReactNode, useEffect} from 'react';
 import Link from '@docusaurus/Link';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import Layout from '@theme/Layout';
 import styles from './index.module.css';
 
@@ -37,6 +38,8 @@ const blogLeaves: Leaf[] = [
 
 /* ── Component ── */
 export default function Home(): ReactNode {
+  const avatarUrl = useBaseUrl('/img/logo.jpg');
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -69,7 +72,7 @@ export default function Home(): ReactNode {
         {/* ===== 树冠 (Crown) ===== */}
         <section className={styles.crown}>
           <div className={styles.avatarRing}>
-            <img className={styles.avatar} src="/img/logo.jpg" alt="DjTang" />
+            <img className={styles.avatar} src={avatarUrl} alt="DjTang" />
           </div>
           <h1 className={styles.heroName}>
             DjTang
