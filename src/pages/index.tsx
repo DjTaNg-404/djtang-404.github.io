@@ -23,17 +23,17 @@ const socials: SocialItem[] = [
 type Leaf = { title: string; desc: string; to: string };
 
 const productLeaves: Leaf[] = [
-  { title: 'Desktop-Claw', desc: '探索桌面级 Agent 交互，让 AI 陪伴在屏幕角落。', to: '/docs/products/desktop-claw' },
-  { title: '阿城', desc: '基于 Coze 构建的 Agent 产品，探索大模型的工程落地。', to: '/docs/products/acheng' },
+  { title: 'Desktop-Claw', desc: '小时候想要的虚拟陪伴，我先用一个会思考的桌宠把它做出来。', to: '/docs/products/desktop-claw' },
+  { title: '阿城', desc: '我想做的不是答题机器，而是一个能陪人把学习走下去的搭子。', to: '/docs/products/acheng' },
 ];
 
 const docLeaves: Leaf[] = [
-  { title: 'Agent Runtime', desc: 'Agent 运行时设计与能力边界探索。', to: '/docs/agent/runtime' },
-  { title: 'Streaming 工程', desc: '流式传输的工程实践与踩坑记录。', to: '/docs/engineering/streaming' },
+  { title: 'Agent Runtime', desc: '这篇是我把桌宠真正跑起来之后，对“怎么做内核”的一次整理。', to: '/docs/agent/runtime' },
+  { title: 'Streaming 工程', desc: '我把自己理解流式输出的过程，从最底层通信重新讲了一遍。', to: '/docs/engineering/streaming' },
 ];
 
 const blogLeaves: Leaf[] = [
-  { title: '如何缓解 AI 焦虑', desc: '在被重塑的时代里，重新寻找定位与价值。', to: '/blog/ai-anxiety' },
+  { title: '如何缓解 AI 焦虑', desc: '和老师聊完之后，我开始重新理解怎样和 AI 时代相处。', to: '/blog/ai-anxiety' },
 ];
 
 /* ── Component ── */
