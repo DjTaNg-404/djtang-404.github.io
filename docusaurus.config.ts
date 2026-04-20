@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const siteUrl = process.env.SITE_URL ?? 'http://localhost:3000';
 const baseUrl = process.env.BASE_URL ?? '/';
 const githubRepoUrl =
-  process.env.GITHUB_REPO_URL ?? 'https://github.com/DjTaNg-404';
+  process.env.GITHUB_REPO_URL ?? 'https://github.com/DjTaNg-404/djtang-404.github.io';
 
 const config: Config = {
   title: 'DjTang (子棠)',
