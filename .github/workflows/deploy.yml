@@ -31,8 +31,10 @@ jobs:
 
       - name: Set site env
         run: |
-          OWNER="${{ github.repository_owner }}"
-          REPO="${{ github.event.repository.name }}"
+          OWNER_RAW="${{ github.repository_owner }}"
+          REPO_RAW="${{ github.event.repository.name }}"
+          OWNER="$(printf '%s' "$OWNER_RAW" | tr '[:upper:]' '[:lower:]')"
+          REPO="$(printf '%s' "$REPO_RAW" | tr '[:upper:]' '[:lower:]')"
 
           echo "SITE_URL=https://${OWNER}.github.io" >> "$GITHUB_ENV"
           echo "GITHUB_REPO_URL=https://github.com/${OWNER}/${REPO}" >> "$GITHUB_ENV"
