@@ -1,12 +1,13 @@
 ---
 sidebar_position: 1
 title: 文档总览
-description: DjTang 博客中的文档入口，包含产品文档、Agent 与工程实践，随笔独立归档在 blog。
+description: DjTang 博客中的文档入口，包含产品文档、Agent、工程实践与阅读笔记，随笔独立归档在 blog。
 keywords:
   - 文档
   - Agent
   - 工程实践
   - 产品文档
+  - 阅读笔记
 ---
 
 # 文档总览
@@ -18,10 +19,4 @@ keywords:
 - 产品文档
 - Agent
 - 工程实践
-
-## 更新节奏
-
-- 碎片笔记先发在随笔
-- 稳定内容再整理进文档
-- 产品说明统一沉淀到产品文档目录
-- 每篇文档尽量附可运行示例
+- 阅读笔记

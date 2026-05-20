@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 1
 title: Coding Agent Harness：从 Patch、Replace 到 Hashline
 description: 阅读 Can Bölük 的 Harness Problem 一文，整理 Coding Agent 编辑工具、Hashline 与 Benchmark 的启发。
 keywords:
