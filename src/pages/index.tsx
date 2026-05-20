@@ -105,8 +105,8 @@ export default function Home(): ReactNode {
           {renderBranches(productLeaves)}
           <div className={`${styles.more} ${styles.reveal}`}><Link to="/products">查看全部产品 →</Link></div>
 
-          {/* 技术文档 */}
-          <div className={`${styles.node} ${styles.reveal}`}><span>技术文档</span></div>
+          {/* 文档 */}
+          <div className={`${styles.node} ${styles.reveal}`}><span>文档</span></div>
           {renderBranches(docLeaves)}
           <div className={`${styles.more} ${styles.reveal}`}><Link to="/docs/intro">查看全部文档 →</Link></div>
 

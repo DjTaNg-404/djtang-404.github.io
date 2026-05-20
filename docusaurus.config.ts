@@ -80,9 +80,8 @@ const config: Config = {
       items: [
         {to: '/', label: '首页', position: 'left', exact: true},
         {to: '/products', label: '产品', position: 'left'},
-        {to: '/docs/intro', label: '技术文档', position: 'left'},
+        {to: '/docs/intro', label: '文档', position: 'left'},
         {to: '/blog', label: '随笔', position: 'left'},
-        {to: '/about', label: '关于我', position: 'left'},
         {
           href: githubRepoUrl,
           label: 'GitHub',
@@ -97,14 +96,8 @@ const config: Config = {
           title: '内容',
           items: [
             {label: '产品', to: '/products'},
-            {label: '技术文档', to: '/docs/intro'},
+            {label: '文档', to: '/docs/intro'},
             {label: '随笔', to: '/blog'},
-          ],
-        },
-        {
-          title: '更多',
-          items: [
-            {label: '关于我', to: '/about'},
           ],
         },
         {
