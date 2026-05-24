@@ -79,11 +79,11 @@ export default function Home(): ReactNode {
             <span className={styles.subName}>子棠</span>
           </h1>
           <div className={styles.tagRow}>
-            <span className={styles.tag}>AI + 个人教育</span>
+            <span className={styles.tag}>AI 应用开发者</span>
             <span className={styles.tagDot}>·</span>
-            <span className={styles.tag}>AI + 虚拟陪伴</span>
+            <span className={styles.tag}>教育与陪伴产品探索</span>
             <span className={styles.tagDot}>·</span>
-            <span className={styles.tag}>独立开发者</span>
+            <span className={styles.tag}>SCAU · CityUHK(DG)</span>
           </div>
           <nav className={styles.socialRow}>
             {socials.map((s) => (
