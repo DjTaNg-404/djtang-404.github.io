@@ -1,5 +1,6 @@
 import {type ReactNode, useEffect} from 'react';
 import Link from '@docusaurus/Link';
+import {usePluginData} from '@docusaurus/useGlobalData';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Layout from '@theme/Layout';
 import styles from './index.module.css';
@@ -22,23 +23,37 @@ const socials: SocialItem[] = [
 
 type Leaf = { title: string; desc: string; to: string };
 
-const productLeaves: Leaf[] = [
+type HomepageLeavesData = {
+  productLeaves?: Leaf[];
+  docLeaves?: Leaf[];
+  blogLeaves?: Leaf[];
+};
+
+const fallbackProductLeaves: Leaf[] = [
   { title: 'Desktop-Claw', desc: '小时候想要的虚拟陪伴，我先用一个会思考的桌宠把它做出来。', to: '/docs/products/desktop-claw' },
   { title: '阿城', desc: '我想做的不是答题机器，而是一个能陪人把学习走下去的搭子。', to: '/docs/products/acheng' },
 ];
 
-const docLeaves: Leaf[] = [
+const fallbackDocLeaves: Leaf[] = [
   { title: 'Agent Runtime', desc: '这篇是我把桌宠真正跑起来之后，对“怎么做内核”的一次整理。', to: '/docs/agent/runtime' },
   { title: 'Streaming 工程', desc: '我把自己理解流式输出的过程，从最底层通信重新讲了一遍。', to: '/docs/engineering/streaming' },
 ];
 
-const blogLeaves: Leaf[] = [
+const fallbackBlogLeaves: Leaf[] = [
   { title: '如何缓解 AI 焦虑', desc: '和老师聊完之后，我开始重新理解怎样和 AI 时代相处。', to: '/blog/ai-anxiety' },
 ];
+
+function getLeaves(leaves: Leaf[] | undefined, fallback: Leaf[]) {
+  return Array.isArray(leaves) && leaves.length > 0 ? leaves : fallback;
+}
 
 /* ── Component ── */
 export default function Home(): ReactNode {
   const avatarUrl = useBaseUrl('/img/logo.jpg');
+  const homepageLeaves = usePluginData('homepage-leaves') as HomepageLeavesData | undefined;
+  const productLeaves = getLeaves(homepageLeaves?.productLeaves, fallbackProductLeaves);
+  const docLeaves = getLeaves(homepageLeaves?.docLeaves, fallbackDocLeaves);
+  const blogLeaves = getLeaves(homepageLeaves?.blogLeaves, fallbackBlogLeaves);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -56,7 +71,7 @@ export default function Home(): ReactNode {
   const renderBranches = (leaves: Leaf[]) =>
     leaves.map((leaf, i) => (
       <div
-        key={leaf.title}
+        key={leaf.to}
         className={`${styles.branch} ${i % 2 === 0 ? styles.left : styles.right} ${styles.reveal}`}
       >
         <Link to={leaf.to} className={styles.leaf}>

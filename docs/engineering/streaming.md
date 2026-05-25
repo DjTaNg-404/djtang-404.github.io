@@ -2,12 +2,14 @@
 sidebar_position: 2
 title: 流式输出：从 HTTP 到 SSE 再到 WebSocket
 description: 从 HTTP、SSE 到 WebSocket，梳理 LLM 流式输出在前后端中的实现路径与取舍。
+date: 2026-04-12
+homepage_description: 我把自己理解流式输出的过程，从最底层通信重新讲了一遍。
 keywords:
-    - HTTP
-    - SSE
-    - WebSocket
-    - 流式输出
-    - 前后端通信
+  - HTTP
+  - SSE
+  - WebSocket
+  - 流式输出
+  - 前后端通信
 ---
 
 # 流式输出：从 HTTP 到 SSE 再到 WebSocket

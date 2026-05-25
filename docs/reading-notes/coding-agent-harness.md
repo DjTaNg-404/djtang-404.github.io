@@ -2,6 +2,8 @@
 sidebar_position: 1
 title: Coding Agent Harness：从 Patch、Replace 到 Hashline
 description: 阅读 Can Bölük 的 Harness Problem 一文，整理 Coding Agent 编辑工具、Hashline 与 Benchmark 的启发。
+date: 2026-05-20
+homepage_description: 读完 Harness Problem 后，我重新理解了编辑接口怎样影响 Coding Agent 表现。
 keywords:
   - Coding Agent
   - Harness

@@ -2,6 +2,8 @@
 sidebar_position: 1
 title: 文档总览
 description: DjTang 博客中的文档入口，包含产品文档、Agent、工程实践与阅读笔记，随笔独立归档在 blog。
+date: 2026-05-20
+homepage_exclude: true
 keywords:
   - 文档
   - Agent

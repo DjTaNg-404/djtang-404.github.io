@@ -32,3 +32,25 @@ npm run serve
 首次使用时请在仓库设置中开启：
 
 - `Settings -> Pages -> Build and deployment -> Source: GitHub Actions`
+
+## 首页枝叶
+
+首页的产品、文档、随笔枝叶由 `plugins/homepage-leaves` 在构建时自动生成：
+
+- 产品：读取 `docs/products/` 中 `homepage_featured: true` 的文档，按 `homepage_rank` 排序。
+- 文档：读取非产品文档，按 frontmatter 中的 `date` 从新到旧展示。
+- 随笔：读取 blog 文章，按文章日期从新到旧展示。
+
+推荐给文档补充这些 frontmatter 字段：
+
+```md
+date: 2026-05-25
+homepage_description: 显示在首页枝叶上的一句话。
+```
+
+产品文档如需固定展示在首页，额外添加：
+
+```md
+homepage_featured: true
+homepage_rank: 1
+```

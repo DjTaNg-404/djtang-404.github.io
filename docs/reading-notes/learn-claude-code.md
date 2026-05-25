@@ -2,6 +2,8 @@
 sidebar_position: 3
 title: learn-claude-code 学习记录：从 Agent Loop 到 Worktree 隔离
 description: 阅读 shareAI-lab/learn-claude-code 项目后的学习记录，重点整理 Coding Agent 的 Harness 工程机制。
+date: 2026-05-21
+homepage_description: 从 Agent Loop、任务系统到 Worktree 隔离，我把 Claude Code 的工程机制重新串了一遍。
 keywords:
   - Claude Code
   - Coding Agent
@@ -1084,4 +1086,3 @@ def remove(self, name, force=False, complete_task=False):
   "ts": 1730000000
 }
 ```
-

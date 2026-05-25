@@ -1,6 +1,7 @@
 ---
 slug: ai-anxiety
 title: 如何缓解 AI 时代带来的 AI 焦虑
+description: 和老师聊完之后，我开始重新理解怎样和 AI 时代相处。
 authors:
   - name: djtang
 tags: [AI, 焦虑, 思考]

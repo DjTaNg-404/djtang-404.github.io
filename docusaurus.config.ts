@@ -31,6 +31,8 @@ const config: Config = {
     locales: ['zh-Hans'],
   },
 
+  plugins: ['./plugins/homepage-leaves'],
+
   presets: [
     [
       'classic',

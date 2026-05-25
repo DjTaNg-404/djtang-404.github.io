@@ -1,6 +1,7 @@
 ---
 slug: vibe-coding-enthusiasm
 title: 逐渐对 vibe coding 失去热情
+description: 一次对 vibe coding 热情下降后的复盘，也是在重新理解 AI coding 和掌控感。
 authors:
   - name: djtang
 tags: [AI, vibe coding, 编程, 思考]

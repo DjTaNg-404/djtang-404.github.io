@@ -2,6 +2,10 @@
 title: Desktop-Claw
 description: 一个常驻桌面的 AI 小伙伴，从桌宠交互延伸到轻量可控的 Agent Runtime。
 sidebar_position: 2
+date: 2026-04-12
+homepage_featured: true
+homepage_rank: 1
+homepage_description: 小时候想要的虚拟陪伴，我先用一个会思考的桌宠把它做出来。
 keywords:
   - Desktop-Claw
   - 桌宠
