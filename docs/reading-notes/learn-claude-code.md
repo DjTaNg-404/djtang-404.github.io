@@ -1,26 +1,30 @@
 ---
 sidebar_position: 3
-title: learn-claude-code 学习记录：从 Agent Loop 到 Worktree 隔离
-description: 阅读 shareAI-lab/learn-claude-code 项目后的学习记录，重点整理 Coding Agent 的 Harness 工程机制。
-date: 2026-05-21
-homepage_description: 从 Agent Loop、任务系统到 Worktree 隔离，我把 Claude Code 的工程机制重新串了一遍。
+title: learn-claude-code 学习记录：从 Agent Loop 到 MCP Tools
+description: 阅读 shareAI-lab/learn-claude-code 项目后的学习记录，补充整理从 Agent Loop 到 MCP Tools 的 Harness 工程机制。
+date: 2026-05-25
+homepage_description: 从 Agent Loop 到 MCP Tools，我把 learn-claude-code 更新后的 Harness 机制补完了一遍。
 keywords:
   - Claude Code
   - Coding Agent
   - Harness
   - Agent Loop
-  - Worktree
+  - MCP Tools
 ---
 
-# learn-claude-code 学习记录：从 Agent Loop 到 Worktree 隔离
+# learn-claude-code 学习记录：从 Agent Loop 到 MCP Tools
 
-这篇笔记整理自我过一遍 `learn-claude-code` 项目时，自己困惑或想要记录的点。学习的重心放在 Harness 工程上，也包含了我对原项目示例代码的一些理解。
+记录自己在过一遍`learn-claude-code`项目时自己困惑或想要记录的点。学习的重心放在 Harness 工程上。
+
+项目地址：https://github.com/shareAI-lab/learn-claude-code
 
 :::note 阅读信息
 
 - 来源项目：[shareAI-lab/learn-claude-code](https://github.com/shareAI-lab/learn-claude-code)
-- 整理日期：2026.05.21
-- 主题标签：Claude Code、Coding Agent、Harness、Agent Loop
+- 初次整理：2026.05.21
+- 更新日期：2026.05.25
+- 更新说明：项目学习文档从 12 章扩展到 20 章，本次补充整理新增章节；汇总章节未单独学习。
+- 主题标签：Claude Code、Coding Agent、Harness、Agent Loop、MCP Tools
 
 :::
 
@@ -1086,3 +1090,843 @@ def remove(self, name, force=False, complete_task=False):
   "ts": 1730000000
 }
 ```
+
+## 更新补记：项目新增章节
+
+以下是 `learn-claude-code` 后续新增章节的补充整理。
+
+## 补充 s03: Permission — 执行前做权限判断
+
+**Harness 层**: 权限 — 在工具执行前加一道门。
+
+之前我们在控制 file tools 受 `safe_path` 保护，但 bash 不受限制，所以很有可能在让它"清理一下项目"，会执行 `rm -rf /`。
+
+因此在让 Agent 进行工具使用之前，要对权限进行判断。
+
+安全不能靠信任模型，要靠代码——在工具执行之前做判断。其实基于规则的判断还是不可或缺的。
+
+![Permission Overview](images/learn-claude-code/permission-overview.svg)
+
+之前的工具调用的循环仍然保留，但是在工具执行前插入`check_permission()`——每个工具调用经过三道闸门，顺序固定：硬拒绝优先，软询问次之，都没命中就放行。
+
+三道闸门对应三种决策：
+
+| 闸门 | 作用 | 命中后 |
+|------|------|--------|
+| 1. 拒绝列表 | 永远禁止的操作（`rm -rf /`、`sudo`） | 直接拒绝，不执行 |
+| 2. 规则匹配 | 取决于上下文的操作（写工作区外、`rm` 文件） | 交给闸门 3 |
+| 3. 用户审批 | 闸门 2 命中后，暂停等用户确认 | 用户决定允许或拒绝 |
+
+三道都没命中 → 直接执行。大部分日常操作走这条路。
+
+**闸门 1**：一张硬拒绝表，先查，命中就返回阻止信息。简单字符串匹配不是可靠安全机制，命令变体和 shell 展开可能绕过。
+
+```python
+DENY_LIST = [
+    "rm -rf /", "sudo", "shutdown", "reboot",
+    "mkfs", "dd if=", "> /dev/sda",
+]
+
+def check_deny_list(command: str) -> str | None:
+    for pattern in DENY_LIST:
+        if pattern in command:
+            return f"Blocked: '{pattern}' is on the deny list"
+    return None
+```
+
+**闸门 2**：规则匹配——描述"什么时候需要问用户"。每条规则指定工具和检查条件。
+
+```python
+PERMISSION_RULES = [
+    {
+        "tools": ["write_file", "edit_file"],
+        "check": lambda args: not (WORKDIR / args.get("path", "")).resolve().is_relative_to(WORKDIR),
+        "message": "Writing outside workspace",
+    },
+    {
+        "tools": ["bash"],
+        "check": lambda args: any(kw in args.get("command", "") for kw in ["rm ", "> /etc/", "chmod 777"]),
+        "message": "Potentially destructive command",
+    },
+]
+
+def check_rules(tool_name: str, args: dict) -> str | None:
+    for rule in PERMISSION_RULES:
+        if tool_name in rule["tools"] and rule["check"](args):
+            return rule["message"]
+    return None
+```
+
+闸门 2 不是直接决定“执行或不执行”，而是判断“这个工具调用是否需要进入用户审批”。如果命中规则，就交给闸门 3；如果没命中规则，就直接放行执行。
+
+所以阀门 2 可以看作为是一种风险判断。
+
+**闸门 3**：规则命中后，暂停等用户输入。
+
+```python
+def ask_user(tool_name: str, args: dict, reason: str) -> str:
+    print(f"\n⚠  {reason}")
+    print(f"   Tool: {tool_name}({args})")
+    choice = input("   Allow? [y/N] ").strip().lower()
+    return "allow" if choice in ("y", "yes") else "deny"
+```
+
+**三道闸门串在一起**，插在工具执行之前：
+
+```python
+def check_permission(block) -> bool:
+    # 闸门 1: 硬拒绝
+    if block.name == "bash":
+        reason = check_deny_list(block.input.get("command", ""))
+        if reason:
+            print(f"\n⛔ {reason}")
+            return False
+
+    # 闸门 2 + 3: 规则匹配 → 用户审批
+    reason = check_rules(block.name, block.input)
+    if reason:
+        decision = ask_user(block.name, block.input, reason)
+        if decision == "deny":
+            return False
+
+    return True
+
+# 在 agent_loop 中——s02 的循环只加了一行：
+for block in response.content:
+    if block.type == "tool_use":
+        if not check_permission(block):           # ← 新增
+            results.append({... "content": "Permission denied."})
+            continue
+        output = TOOL_HANDLERS[block.name](**block.input)  # s02 原有
+        results.append(...)
+```
+
+## 补充 s04: Hooks — 挂在循环上，不写进循环里
+
+**Harness 层**: hook — 扩展点不侵入循环。
+
+Hook 是给 agent loop 留出来的一组扩展插口。核心循环只负责在关键时机触发 hook，具体做什么由外部注册的函数决定。
+
+也就是说，假设不适用 Hook，在具体的 agent loop 代码内，除了上一篇章的工具调用的安全审计，还会有参数校验、日志记录、成本统计、通知系统、用户审批、策略拦截。执行了 agent loop 之后，还会有记录结果、自动 git add、触发格式化、更新 UI、写审计日志、统计耗时等工作。如果不断添加，最后代码会写成这样。
+
+```python
+def agent_loop(messages):
+    while True:
+        # ... LLM call ...
+        for block in response.content:
+            if block.type == "tool_use":
+                log_to_file(block)          # 加一行
+                check_permission(block)     # 加一行
+                notify_slack(block)         # 又加一行
+                output = execute(block)
+                auto_git_add(block)         # 再加一行
+                # ... 很快循环就认不出来了
+```
+
+因此循环和权限逻辑完全保留。唯一的变动是把 `check_permission()` 从循环体内移到了 hook 上，循环不再直接调用任何检查函数，改为 `trigger_hooks("PreToolUse", block)`，由注册表决定跑什么。
+
+![Hooks Overview](images/learn-claude-code/hooks-overview.svg)
+
+四个事件，覆盖一个完整的 agent cycle：
+
+| 事件 | 触发时机 | 典型用途 |
+|------|---------|---------|
+| UserPromptSubmit | 用户输入提交后、进入 LLM 前 | 输入验证、注入上下文 |
+| PreToolUse | 工具执行前 | 权限检查、日志记录 |
+| PostToolUse | 工具执行后 | 副作用（自动 git add 等）、输出检查 |
+| Stop | 循环即将退出时 | 收尾清理（CC 还支持强制续跑） |
+
+扩展通过 `register_hook()` 添加，循环只调用 `trigger_hooks()`。
+
+**hook 注册表**：一个字典，事件名映射到回调列表。
+
+```python
+HOOKS = {
+    "UserPromptSubmit": [],
+    "PreToolUse": [],
+    "PostToolUse": [],
+    "Stop": [],
+}
+
+def register_hook(event: str, callback):
+    HOOKS[event].append(callback)
+
+def trigger_hooks(event: str, *args):
+    for callback in HOOKS[event]:
+        result = callback(*args)
+        if result is not None:   # 返回值 ≠ None → hook 说"停"
+            return result
+    return None
+```
+
+在 HOOKS 里定义 agent loop 的几个可扩展阶段；再用 register_hook 把具体功能注册到对应阶段；最后在 loop 运行到这些阶段时，通过 trigger_hooks 统一触发已注册的功能。
+
+**循环里只改了一处**：s03 直接调用 `check_permission(block)`，s04 改为 `trigger_hooks("PreToolUse", block)`：
+
+```python
+for block in response.content:
+    if block.type != "tool_use":
+        continue
+
+    # s03: if not check_permission(block): ...
+    # s04: hook 替代硬编码
+    blocked = trigger_hooks("PreToolUse", block)
+    if blocked:
+        results.append({"type": "tool_result", "tool_use_id": block.id,
+                        "content": str(blocked)})
+        continue
+
+    handler = TOOL_HANDLERS.get(block.name)
+    output = handler(**block.input) if handler else f"Unknown: {block.name}"
+
+    trigger_hooks("PostToolUse", block, output)
+
+    results.append({"type": "tool_result", "tool_use_id": block.id,
+                    "content": output})
+```
+
+四个 hook 覆盖了 agent cycle 的关键节点：输入→执行前→执行后→退出。循环只负责调用 trigger_hooks()，具体逻辑全在 hook 回调里。
+
+如果具体的场景和业务有自己的流程，可以在此处进行设计。
+
+## 补充 s09: Memory — 压缩会丢细节，要有一层不丢的
+
+**Harness 层**: 记忆 — 跨压缩、跨会话的知识积累。
+
+上面讲过 autoCompact，压缩确实可以节省上下文，但是一些关键的细节信息有可能会被忽略掉，例如"用 tab 缩进不要用空格"可能被简化成"用户有代码风格偏好"。而且新开一个会话，连摘要也没了。
+
+上下文长度是有限，但是必要的信息仍然需要全数保留到上下文里，因此需要一层不参与压缩、跨会话保留的存储。
+
+![Memory Overview](images/learn-claude-code/memory-overview.svg)
+
+存储选文件系统：`.memory/` 目录下，每个记忆一个 `.md` 文件，带 YAML frontmatter（`name` / `description` / `type`）。文件多了需要索引：`MEMORY.md` 一行一个链接，注入 SYSTEM。
+
+也就是说，不是每次都把所有 memory 都塞进上下文，而是在 system prompt 里只塞入 `MEMORY.md` 的索引，模型看到索引后，知道有某条记忆存在；如果任务需要，再通过工具读取具体 `.md` 文件。
+
+这一操作和 Skills 的渐进式披露类似。
+
+关键设计：索引常驻 SYSTEM prompt（可被 prompt cache 缓存），文件内容按需注入（按 filename/description 匹配当前对话，不破坏 cache）。写入分两条路径：用户显式说"记住"，或者每轮结束后后台提取。文件积累多了，定期整理去重。
+
+四类记忆，各有用途：
+
+| 类型 | 回答什么 | 示例 |
+|------|---------|------|
+| user | 你是谁 | "用 tab 不用空格" |
+| feedback | 怎么做事 | "别 mock 数据库" |
+| project | 正在发生什么 | "auth 重写是合规驱动" |
+| reference | 东西在哪找 | "pipeline bug 在 Linear INGEST" |
+
+**存储：Markdown 文件 + 索引**
+
+每个记忆是一个 `.md` 文件，YAML frontmatter 记录元数据：
+
+```markdown
+---
+name: user-preference-tabs
+description: User prefers tabs for indentation
+type: user
+---
+
+User prefers using tabs, not spaces, for indentation.
+**Why:** Consistency with existing codebase conventions.
+**How to apply:** Always use tabs when writing or editing files.
+```
+
+`MEMORY.md` 是索引，一行一个链接：
+
+```markdown
+- [user-preference-tabs](user-preference-tabs.md) — User prefers tabs for indentation
+```
+
+写入新记忆时自动重建索引：
+
+```python
+def write_memory_file(name, mem_type, description, body):
+    slug = name.lower().replace(" ", "-")
+    filepath = MEMORY_DIR / f"{slug}.md"
+    filepath.write_text(
+        f"---\nname: {name}\ndescription: {description}\ntype: {mem_type}\n---\n\n{body}\n"
+    )
+    _rebuild_index()
+```
+
+**加载：两条路径**
+
+- **路径一：索引常驻 SYSTEM。** `build_system()` 每轮重建 SYSTEM 时读取 `MEMORY.md`，把记忆清单注入。SYSTEM prompt 中的索引可以被 prompt cache 缓存，不需要每轮重新发送。
+- **路径二：相关记忆按需注入。** 每轮调用前，`load_memories()` 把最近对话和记忆目录（name + description）一起发给 LLM 做一次轻量 side-query，选出相关的文件名，再读文件内容注入上下文。最多 5 条，控制开销。
+
+```python
+def select_relevant_memories(messages, max_items=5):
+    files = list_memory_files()
+    if not files:
+        return []
+
+    # Build catalog: "0: user-preference-tabs — User prefers tabs..."
+    catalog = "\n".join(f"{i}: {f['name']} — {f['description']}" for i, f in enumerate(files))
+
+    response = client.messages.create(model=MODEL, messages=[{"role": "user",
+        "content": f"Select relevant memory indices. Return JSON array.\n\n"
+                   f"Recent conversation:\n{recent}\n\nMemory catalog:\n{catalog}"}],
+        max_tokens=200)
+    indices = json.loads(re.search(r'\[.*?\]', response.content[0].text).group())
+    return [files[i]["filename"] for i in indices if 0 <= i < len(files)]
+```
+
+如果 side-query 失败（API 错误、JSON 解析失败），降级到关键词匹配 name + description。
+
+也就是，每一轮开始之前，都会会读取 .memory/ 的记忆索引，把最近对话和所有记忆的 name + description 发给一次轻量 LLM 查询，让模型挑选出最多 5 个相关的记忆文件，再让 harness 读取对应的记忆加载到上下问。
+
+**写入：每轮结束后提取**
+
+用户不会每次都说"记住这个"。偏好通常散落在正常对话中："用 tab 比空格好"、"以后都用单引号"。
+
+`extract_memories()` 在每轮结束时运行，条件是模型停止且没有 tool_use（说明对话告一段落）：
+
+```python
+# In agent_loop:
+if response.stop_reason != "tool_use":
+    extract_memories(messages)   # 从最近对话提取新记忆
+    consolidate_memories()       # 检查是否需要整理
+    return
+```
+
+提取前先检查已有记忆，避免重复。提取 prompt 要求 LLM 返回 `{name, type, description, body}` 的 JSON 数组，只有确实有新信息时才写文件。
+
+```python
+def extract_memories(messages):
+    dialogue = format_recent_messages(messages[-10:])
+    existing = "\n".join(f"- {m['name']}: {m['description']}" for m in list_memory_files())
+
+    prompt = (
+        "Extract user preferences, constraints, or project facts.\n"
+        "Return JSON array: [{name, type, description, body}].\n"
+        "If nothing new or already covered, return [].\n\n"
+        f"Existing memories:\n{existing}\n\nDialogue:\n{dialogue[:4000]}"
+    )
+    # ... parse response, write files ...
+```
+
+**整理：低频合并去重**
+
+记忆文件会积累。`consolidate_memories()` 在文件数达到阈值（默认 10）时触发，让 LLM 去重、合并矛盾、淘汰过时记忆：
+
+```python
+CONSOLIDATE_THRESHOLD = 10
+
+def consolidate_memories():
+    files = list_memory_files()
+    if len(files) < CONSOLIDATE_THRESHOLD:
+        return  # 太少，不值得整理
+    # Send all memories to LLM, get back deduplicated list
+    # Replace all files with consolidated results
+```
+
+CC 把这个过程叫 Dream，实际有四层门控：时间间隔、扫描节流、会话数、文件锁。教学版简化为文件数阈值。
+
+总结一下，“写入”和“整理”都是发生在一个 Agent Loop 结束阶段。
+
+写入是从最近对话里提取“值得长期保存的新信息”，再和已有的 memory 的 name/description 做对照，如果不是已经覆盖的信息，就写成新的 .md memory 文件。
+
+整理是低频重新回顾所有 memory 文件进行合并重复、删除过时/矛盾、控制总数、重写 .memory/ 里的记忆文件和 MEMORY.md 索引。
+
+## 补充 s10: System Prompt — 运行时组装，不硬编码
+
+**Harness 层**: 提示 — 运行时组装, 不硬编码。
+
+由于我们的记忆、工具等未来会越来越多，如果每一次都塞进去 system prompt，都会占用大量空间。System prompt 应该是运行时根据当前状态组装的配置：哪些工具启用、哪些上下文可见、哪些记忆相关、哪些内容必须保持稳定以命中 prompt cache。
+
+![System Prompt Overview](images/learn-claude-code/system-prompt-overview.svg)
+
+
+| Section | 加载策略 | 内容 | 判断依据 |
+|---------|---------|------|---------|
+| identity | 始终 | 你是谁、怎么做事 | 始终存在 |
+| tools | 始终 | 可用工具列表 | `enabled_tools` |
+| workspace | 始终 | 工作目录 | 始终存在 |
+| memory | 按需 | 相关记忆内容 | `.memory/MEMORY.md` 是否存在 |
+
+关键设计：section 是否加载取决于真实状态（工具是否存在、文件是否存在），不是消息里的关键词。
+
+其实最主要的，还是根据自己的业务需求来制定，哪些内容需要加载，哪些内容不需要加载。同时为了可拓展性，不应该直接写死在 prompt 里，每一项内容应该单独出来进行维护。
+
+PROMPT_SECTIONS: 分段定义
+
+把一大段字符串拆成字典，每个 key 是一个主题：
+
+```python
+PROMPT_SECTIONS = {
+    "identity": "You are a coding agent. Act, don't explain.",
+    "tools": "Available tools: bash, read_file, write_file.",
+    "workspace": f"Working directory: {WORKDIR}",
+    "memory": "Relevant memories are injected below when available.",
+}
+```
+
+每个 section 独立维护。修改 `tools` 不影响 `identity`，新增 `memory` 不动 `workspace`。
+
+assemble_system_prompt: 按需拼接
+
+不是所有 section 每次都需要。当前没有记忆文件，加载 memory section 只是浪费 token。根据 context 的真实状态决定加载哪些：
+
+```python
+def assemble_system_prompt(context: dict) -> str:
+    sections = []
+
+    # 始终加载
+    sections.append(PROMPT_SECTIONS["identity"])
+    sections.append(PROMPT_SECTIONS["tools"])
+    sections.append(PROMPT_SECTIONS["workspace"])
+
+    # 按需加载 — 基于真实状态，不是关键词
+    memories = context.get("memories", "")
+    if memories:
+        sections.append(f"Relevant memories:\n{memories}")
+
+    return "\n\n".join(sections)
+```
+
+"始终加载"的是每轮都需要的：身份、工具、工作目录。"按需加载"的只在特定条件下才有用。
+
+为什么不全加载？token 有成本（system prompt 每轮计费），信息越少 LLM 越专注（无关指令是噪音）。
+
+get_system_prompt: 缓存避免重复拼接
+
+上下文没变时（同一轮对话的多次 LLM 调用，context 相同），重新拼接是浪费。用确定性序列化检测变化，命中缓存直接返回：
+
+```python
+def get_system_prompt(context: dict) -> str:
+    global _last_context_key, _last_prompt
+    key = json.dumps(context, sort_keys=True, ensure_ascii=False, default=str)
+    if key == _last_context_key and _last_prompt:
+        return _last_prompt
+    _last_context_key = key
+    _last_prompt = assemble_system_prompt(context)
+    return _last_prompt
+```
+
+用 `json.dumps` 而不是 `hash()`：Python 内置 `hash()` 有进程随机化，不适合做稳定 cache key，而且遇到 list/dict 会报 `unhashable type`。
+
+context: 真实状态，不是关键词猜测
+
+context 反映当前运行态的真实状态：
+
+```python
+def update_context(context: dict, messages: list) -> dict:
+    memories = ""
+    if MEMORY_INDEX.exists():
+        content = MEMORY_INDEX.read_text().strip()
+        if content:
+            memories = content
+    return {
+        "enabled_tools": list(TOOL_HANDLERS.keys()),
+        "workspace": str(WORKDIR),
+        "memories": memories,
+    }
+```
+
+`enabled_tools` 列出实际注册的工具。`memories` 检查 `.memory/MEMORY.md` 是否存在。section 加载基于这些真实状态，不在消息里搜关键词。
+
+合起来跑
+
+```python
+def agent_loop(messages: list, context: dict):
+    system = get_system_prompt(context)
+    while True:
+        response = client.messages.create(
+            model=MODEL, system=system, messages=messages,
+            tools=TOOLS, max_tokens=8000)
+        # ... 工具执行 ...
+        context = update_context(context, messages)
+        system = get_system_prompt(context)
+```
+
+每轮循环开头拿一次 system prompt。context 变了就重新组装，没变就返回缓存。
+
+其实可以这么理解：context 就是待拼接的运行状态，比如有哪些工具、什么工作目录、有没有 memory 索引。缓存只是省掉拼接的这一步，而之前搜索的这些步骤都还是必须进行的，而不是说省掉更新状态、查询记忆的步骤。
+
+## 补充 s11: Error Recovery — 错误不是结束，是重试的开始
+
+**Harness 层**: 韧性 — 主循环遇到错误时分类并恢复。
+
+在实际使用中，Agent 可能会出现报错，例如 Error: 529 overloaded 等等。
+
+那么首先先列举一些常见的概念
+
+1. **限流 Rate Limiting**：限制单位时间内的请求数量，防止系统被打爆。
+
+   比如一个 API 规定每分钟最多 100 次请求，超过之后就返回：429 Too Many Requests。限流的目的是为了保护系统，不让系统一次性处理太多的请求。
+
+2. **熔断 Circuit Breaking**：发现某个服务连续失败，就暂时停止继续调用它。
+
+   就像电路保护丝一样，目的是避免明知道服务已经不行了，还持续请求，这样把自己和对方都拖垮。在 Agent 里对应着：模型连续 529 overloaded。
+
+3. **降级 Degradation / Fallback**：主方案不可用时，换一个能力弱一点但可用的方案。
+
+   降级的核心是不追求完美结果，先保证系统还能工作。例如高级模型过载酒切换到便宜、稳定的模型；上下文太长就先进行压缩等等。
+
+所以一些传统系统里的概念，对应到 Agent 之中，大致如下：
+
+| 传统概念 | 传统系统里是什么意思         | Agent 里的对应                              |
+| :------- | :--------------------------- | :------------------------------------------ |
+| 限流     | 请求太多，服务要求你慢点     | API 返回 429，agent 退避重试                |
+| 过载     | 服务压力太大，暂时扛不住     | API 返回 529 overloaded                     |
+| 熔断     | 连续失败后暂停调用主路径     | 连续 529 后切 fallback model                |
+| 降级     | 主能力不可用时换弱但可用方案 | fallback model / reactive compact / 续写    |
+| 雪崩     | 局部失败导致系统级连锁崩溃   | 多 agent 同时重试、上下文爆炸、工具失败连锁 |
+| 退避     | 失败后等待更久再试           | 0.5s、1s、2s、4s...                         |
+| 抖动     | 加随机延迟，错开请求峰值     | random.uniform(0, base * 0.25)              |
+
+![Error Recovery Overview](images/learn-claude-code/error-recovery-overview.svg)
+
+这里指展示了三种错误回复的方法。
+
+路径 1：输出被截断
+
+模型话说一半，`max_tokens` 用完了。默认 8000 token 不够它输出完整回答。
+
+第一次发生时，直接把 `max_tokens` 从 8K 升级到 64K（8 倍空间），重试同一请求——此时不追加截断输出到 messages，保持原始请求不变。如果 64K 还是不够，才保存截断输出并注入续写提示让模型接着刚才的话继续说，最多 3 次：
+
+```python
+if response.stop_reason == "max_tokens":
+    # First escalation: don't append truncated output, retry same request
+    if not state.has_escalated:
+        max_tokens = ESCALATED_MAX_TOKENS
+        state.has_escalated = True
+        continue  # messages unchanged, same request with more tokens
+    # 64K still truncated: save output + continuation prompt
+    messages.append({"role": "assistant", "content": response.content})
+    if state.recovery_count < MAX_RECOVERY_RETRIES:
+        messages.append({"role": "user", "content":
+            "Output token limit hit. Resume directly — "
+            "no apology, no recap. Pick up mid-thought."})
+        state.recovery_count += 1
+        continue
+    return  # still truncated after 3 continuations
+# Normal: append after max_tokens check
+messages.append({"role": "assistant", "content": response.content})
+```
+
+升级只有一次机会，续写最多 3 次。超过就退出——继续续写也不会有实质产出。
+
+路径 2：上下文超限
+
+LLM 说"你的上下文太长了"（`prompt_too_long`）。s08 的四层压缩全跑过了，还是超。
+
+触发 reactive compact——比 auto compact 更激进。教学版只保留最后 5 条消息模拟压缩效果；真实实现会调用 LLM 生成 compact 摘要再重试。压缩后重试。但如果压缩过一次还是超限，只能退出——再压缩也不会变小：
+
+```python
+except PromptTooLongError:
+    if not state.has_attempted_reactive_compact:
+        messages[:] = reactive_compact(messages)
+        state.has_attempted_reactive_compact = True
+        continue
+    return  # 压缩过了还是超限，只能退出
+```
+
+路径 3：临时故障
+
+网络抖动、429 限流、529 过载——这些不是 bug，是分布式系统的常态。
+
+429 和 529 统一走指数退避 + 抖动：第一次等 0.5 秒，第二次等 1 秒，第三次等 2 秒，最多 10 次。加随机抖动让并发请求不在同一时刻重试。连续 3 次 529 过载 → 切换到备用模型（若配置了 `FALLBACK_MODEL_ID` 环境变量）：
+
+```python
+def retry_delay(attempt, retry_after=None):
+    if retry_after:
+        return retry_after
+    base = min(500 * (2 ** attempt), 32000) / 1000
+    return base + random.uniform(0, base * 0.25)
+
+def with_retry(fn, state, max_retries=10):
+    for attempt in range(max_retries):
+        try:
+            return fn()
+        except (RateLimitError, OverloadedError):
+            delay = retry_delay(attempt)
+            time.sleep(delay)
+            if is_overloaded:
+                state.consecutive_529 += 1
+                if state.consecutive_529 >= 3 and FALLBACK_MODEL:
+                    state.current_model = FALLBACK_MODEL
+    raise MaxRetriesExceeded()
+```
+
+退避公式：`min(500 × 2^attempt, 32000) + random(0~25%)`。如果服务器返回 `Retry-After` header，优先用那个值。
+
+合起来就一并写入 Agent Loop 里：
+
+```python
+def agent_loop(messages, context):
+    system = get_system_prompt(context)
+    state = RecoveryState()
+    max_tokens = 8000
+
+    while True:
+        try:
+            response = with_retry(
+                lambda: client.messages.create(
+                    model=state.current_model, system=system,
+                    messages=messages, tools=TOOLS,
+                    max_tokens=max_tokens),
+                state)
+        except Exception as e:
+            if is_prompt_too_long_error(e):
+                if not state.has_attempted_reactive_compact:
+                    messages[:] = reactive_compact(messages)
+                    state.has_attempted_reactive_compact = True
+                    continue
+                return
+            log_error(e)
+            return
+
+        # max_tokens check BEFORE appending to messages
+        if response.stop_reason == "max_tokens":
+            if not state.has_escalated:
+                max_tokens = 64000
+                state.has_escalated = True
+                continue  # retry same request, messages unchanged
+            # save truncated output + continuation prompt
+            messages.append({"role": "assistant", "content": response.content})
+            messages.append({"role": "user", "content": CONTINUATION_PROMPT})
+            continue
+        # Normal completion
+        messages.append({"role": "assistant", "content": response.content})
+
+        if response.stop_reason != "tool_use":
+            return
+        # ... tool execution ...
+```
+
+## 补充 s14: Cron Scheduler — 按时间表生产工作
+
+**Harness 层**: 调度 — 独立线程判断时间, 队列传递触发。
+
+闹钟是定时任务，到点了就会开始响。那么是否大模型也可以设计定时工作呢？
+
+![Cron Scheduler Overview](images/learn-claude-code/cron-scheduler-overview.svg)
+
+前面我们学了后台任务，实际上就是开启一个线程来进行任务。独立的 cron 调度线程，每秒检查一次，时间到了把任务塞进 `cron_queue`；再由 queue processor 在 Agent 空闲时自动交付。cron 调度线程本身不执行任务，它只负责检查时间，时间到了就把任务放进 cron_queue。真正交付给 Agent 执行的是 queue processor + agent_loop。
+
+Cron 调度分四层：
+
+1. **Scheduler**：daemon 线程，每秒轮询，判断时间到了没有
+2. **Queue**：`cron_queue`，调度线程写入已触发任务
+3. **Queue Processor**：发现队列非空且 Agent 空闲，启动一轮 agent_loop
+4. **Consumer**：agent_loop 从队列消费，注入到 messages
+
+教学版实现的是最小 queue processor：用 `agent_lock` 判断 Agent 是否空闲，空闲时自动交付定时任务。真实 CC 的 `useQueueProcessor.ts` 还会处理 UI 阻塞、队列优先级和不同消息模式。
+
+每个 cron 任务是一个 `CronJob` 对象：
+
+```python
+@dataclass
+class CronJob:
+    id: str
+    cron: str        # "0 9 * * *" (五段式 cron 表达式)
+    prompt: str      # 触发时注入给 Agent 的消息
+    recurring: bool  # True=周期性，False=一次性
+    durable: bool    # True=写磁盘，跨会话保留
+```
+
+Cron 表达式，五段式，Unix 用了 50 年：
+
+```text
+分钟  小时  日  月  星期
+  *    *   *   *   *      每分钟
+  0    9   *   *   *      每天早上 9:00
+ */5    *   *   *   *      每 5 分钟
+  0    9   *   *  1-5     工作日早上 9:00
+```
+
+支持 `*`、`*/N`、`N`、`N-M`、`N,M,...`。
+
+标准 cron 语义：分钟、小时、月必须全部匹配；日（DOM）和星期（DOW）同时被约束时任一匹配即可（OR）：
+
+这里面的`*`指的是任意值都满足，那么`*/5`的意思是每 5 分钟，也就是每个 `* % 5 == 0` 的分钟都满足。日（DOM）和星期（DOW）的意思是只要是 Day of Month 某一天达成，或者 Day of Week 的某天达成即可，避免出现必须得是 1 号并且是星期一这种情况出现。
+
+调度器跑在独立的 daemon 线程里，不依赖 agent_loop 是否在执行。单个 job 异常不会杀掉整个线程。
+
+关键设计：
+
+- **独立于 agent_loop**：即使 agent_loop 没在跑，调度器也在后台检查时间
+- **date-aware minute_marker**：用 `"YYYY-MM-DD HH:MM"` 防止同一分钟重复触发，同时不会在第二天跳过
+- **单 job try/except**：一个坏 job 不会拖垮整个调度线程
+- **一次性任务**：触发后自动从 scheduled_jobs 里删除
+
+Queue Processor + agent_loop: 交付端
+
+queue processor 不检查时间，只负责在队列有任务且 Agent 空闲时拉起一轮执行。
+
+agent_loop 也不负责检查时间，它只从 `cron_queue` 里拿已触发的任务，注入到 messages 里。
+
+生产者（调度线程）、交付者（queue processor）和消费者（agent_loop）通过 `cron_queue`、`cron_lock`、`agent_lock` 解耦。
+
+校验：防止坏 cron 杀掉调度器
+
+`schedule_job` 在注册前校验 cron 表达式，非法的直接返回错误。
+
+从磁盘加载 durable job 时也会跳过非法表达式，避免单个坏任务拖垮启动。
+
+- **Durable**：任务定义写进 `.scheduled_tasks.json`。Agent 重启后加载文件，恢复任务。
+- **Session-only**：只在内存里。Agent 关闭就没了。
+
+**重要前提**：cron 调度器必须在 Agent 进程内跑。进程关闭，调度也停。Durable 只意味着任务定义跨重启保留，下次 Agent 启动时调度器才会发现"该触发了"并触发。如果需要"即使应用关闭也能定时跑"，请用系统 crontab 或 systemd timer。
+
+合起来跑
+
+```text
+1. 启动时：
+   load_durable_jobs() → 从 .scheduled_tasks.json 恢复持久化任务
+   Thread(cron_scheduler_loop, daemon=True).start() → 调度线程开始轮询
+   Thread(queue_processor_loop, daemon=True).start() → 队列处理器等待交付
+
+2. 注册任务：
+   schedule_cron(cron="*/2 * * * *", prompt="run date", durable=True)
+   → CronJob 写入 scheduled_jobs + .scheduled_tasks.json
+
+3. 每 2 分钟：
+   调度线程检查 → cron_matches 返回 True → cron_queue.append(job)
+   → queue processor 发现 Agent 空闲 → agent_loop consume_cron_queue
+   → 注入 "[Scheduled] run date"
+   → LLM 收到消息，执行 date 命令
+
+4. 关闭进程：
+   调度线程跟着停（daemon=True）
+   .scheduled_tasks.json 还在磁盘上
+   下次启动 → load_durable_jobs → 任务恢复
+```
+
+简单理解一下：
+
+启动一个独立 daemon 调度线程，它不进入 agent loop，而是单独按时间检查 cron job。
+
+时间命中后，它只把任务放进 cron_queue，不直接执行。
+
+queue processor 看到队列有任务且 Agent 空闲，就启动一轮 agent loop，把定时任务作为 [Scheduled] 消息注入，让模型完成。
+
+调度线程会随主进程退出而关闭；durable 任务会写入磁盘，并在下次启动时恢复。
+
+## 补充 s19: MCP Tools — 外接工具，标准协议
+
+**Harness 层**: 插件 — 外部能力通过标准协议接入。
+
+Agent 需要链接外部服务，需要一个标准协议——外部服务只要实现它，Agent 就能直接调用，不管服务用什么语言写的。
+
+因此 MCP Tools 出现。
+
+![MCP Architecture](images/learn-claude-code/mcp-architecture.svg)
+
+MCP（Model Context Protocol）定义了 Agent 如何发现和调用外部工具。核心概念：
+
+| 概念 | 作用 |
+|------|------|
+| MCPClient | Agent 端的客户端，连接 server、发现工具、调用工具 |
+| MCP Server | 外部服务，实现 `tools/list` + `tools/call` |
+| assemble_tool_pool | 把内置工具和 MCP 工具组装成一个工具池 |
+| mcp\_\_server\_\_tool 命名 | 避免不同 server 的工具名冲突 |
+
+教学版用 mock handler 模拟外部 server。真实版会启动子进程，通过 stdin/stdout 发送 JSON-RPC 请求。mock 的好处是不依赖外部服务就能跑完整流程；代价是你看不到真正的网络通信和进程管理。
+
+理解一下，MCP是一套通信协议，规定了：
+
+- 客户端怎么连接 server
+- 客户端怎么问 server 有哪些工具
+- server 怎么返回工具列表
+- 客户端怎么调用某个工具
+- server 怎么返回执行结果
+- 工具 schema 怎么描述
+- 错误怎么表达
+
+MCP 的价值是把“给 Agent 接外部工具”标准化。外部服务只要实现 MCP Server，Agent 端的 MCPClient 就能发现它提供的工具，并通过统一协议调用；harness 再把这些工具组装进 Agent 的工具池，让模型像调用内置工具一样调用外部能力。
+
+MCPClient：发现 + 调用
+
+```python
+class MCPClient:
+    def __init__(self, name: str):
+        self.name = name
+        self.tools: list[dict] = []
+        self._handlers: dict[str, callable] = {}
+
+    def register(self, tool_defs, handlers):
+        """Simulates tools/list discovery."""
+        self.tools = tool_defs
+        self._handlers = handlers
+
+    def call_tool(self, tool_name: str, args: dict) -> str:
+        """Simulates tools/call."""
+        handler = self._handlers.get(tool_name)
+        if not handler:
+            return f"MCP error: unknown tool '{tool_name}'"
+        return handler(**args)
+```
+
+教学版用 Python 函数模拟 server 的工具实现。真实版通过 stdio JSON-RPC 与子进程通信。
+
+connect_mcp：连接 + 发现
+
+```python
+def connect_mcp(name: str) -> str:
+    if name in mcp_clients:
+        return f"MCP server '{name}' already connected"
+    factory = MOCK_SERVERS.get(name)
+    if not factory:
+        return f"Unknown server '{name}'. Available: ..."
+    mcp_client = factory()
+    mcp_clients[name] = mcp_client
+    return f"Connected to '{name}'. Discovered: ..."
+```
+
+连接后，server 提供的工具立即可用。
+
+normalize_mcp_name：名称规范化
+
+```python
+_DISALLOWED_CHARS = re.compile(r'[^a-zA-Z0-9_-]')
+
+def normalize_mcp_name(name: str) -> str:
+    return _DISALLOWED_CHARS.sub('_', name)
+```
+
+所有非 `[a-zA-Z0-9_-]` 的字符替换为 `_`。防止 server 名或工具名中包含特殊字符导致命名冲突或注入问题。
+
+assemble_tool_pool：组装工具池
+
+```python
+def assemble_tool_pool() -> tuple[list[dict], dict]:
+    tools = list(BUILTIN_TOOLS)
+    handlers = dict(BUILTIN_HANDLERS)
+    for server_name, mcp_client in mcp_clients.items():
+        safe_server = normalize_mcp_name(server_name)
+        for tool_def in mcp_client.tools:
+            safe_tool = normalize_mcp_name(tool_def["name"])
+            prefixed = f"mcp__{safe_server}__{safe_tool}"
+            tools.append(...)
+            handlers[prefixed] = (
+                lambda *, c=mcp_client, t=tool_def["name"], **kw:
+                    c.call_tool(t, kw))
+    return tools, handlers
+```
+
+前缀 `mcp__{server}__{tool}` 避免不同 server 的工具名冲突。名称经过 `normalize_mcp_name` 规范化。
+
+MCP 工具的 description 带 `(readOnly)` 或 `(destructive)` 标注——教学版用文本标注，真实 CC 用 tool annotations 结构体让权限系统判断。
+
+无缓存：工具池变了，prompt 也变
+
+s10-s18 的 agent_loop 用 prompt cache 避免重复序列化。s19 去掉了缓存：
+
+```python
+def agent_loop(messages, context):
+    tools, handlers = assemble_tool_pool()     # 每次重新构建
+    system = assemble_system_prompt(context)    # 每次重新生成
+    ...
+    if any(b.name == "connect_mcp" ...):
+        tools, handlers = assemble_tool_pool()  # 连接后重建
+        system = assemble_system_prompt(context)
+```
+
+原因：`connect_mcp` 之后工具池变化了——新增了 `mcp__docs__search` 等工具。缓存中的工具列表是旧的，继续用会导致模型调用不到新工具。教学版直接去掉缓存，代价是多花一点序列化时间。
+
+MCP 工具只有 Lead 可用
+
+教学版中，`connect_mcp` 是 Lead 工具，`assemble_tool_pool` 也只服务于 Lead 的 agent_loop。Teammate 仍使用固定的 8 个子集工具（bash、read_file、write_file、send_message、submit_plan、list_tasks、claim_task、complete_task）。
