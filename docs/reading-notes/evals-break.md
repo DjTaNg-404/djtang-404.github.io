@@ -2,6 +2,7 @@
 sidebar_position: 2
 title: AI Evals 为什么会失效：从 Benchmark 到序参量
 description: 阅读 Lun Wang 的 Your Evals Will Break and You Won't See It Coming，整理评估系统为何会在能力跃迁时失效。
+hide_title: true
 date: 2026-05-20
 homepage_description: 这篇整理了评估系统为什么会在模型能力跃迁时突然失效。
 keywords:

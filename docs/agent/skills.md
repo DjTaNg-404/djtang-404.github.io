@@ -2,6 +2,7 @@
 sidebar_position: 1
 title: Agent Skills
 description: 从 Function Calling 过渡到 Agent Skills，理解渐进式披露与按需激活的能力组织方式。
+hide_title: true
 date: 2026-04-12
 homepage_description: 从 Function Calling 过渡到 Agent Skills，理解按需激活的能力组织方式。
 keywords:

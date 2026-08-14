@@ -1,27 +1,47 @@
-import {type ReactNode, useEffect} from 'react';
+import {type ReactNode} from 'react';
 import Link from '@docusaurus/Link';
 import {usePluginData} from '@docusaurus/useGlobalData';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Layout from '@theme/Layout';
 import styles from './index.module.css';
 
-/* ── SVG Icons ── */
-const GithubIcon = () => <svg viewBox="-74.4 -120.9 644.8 725.4" width="16" height="16" fill="currentColor"><path d="M165.9 389.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 0C106.1 0 0 105.3 0 244c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 449.8 496 354.9 496 244 496 105.3 383.5 0 244.8 0zM97.2 344.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>;
-const MailIcon = () => <svg viewBox="-13.2 -16.5 114.4 99.02" width="16" height="16" fill="currentColor"><path d="M6 66h14V32L0 17v43c0 3.3 2.7 6 6 6z"/><path d="M68 66h14c3.3 0 6-2.7 6-6V17L68 32z"/><path d="M68 6v26l20-15V9c0-7.4-8.5-11.6-14.4-7.2z"/><path d="M20 32V6l24 18 24-18v26L44 50z"/><path d="M0 9v8l20 15V6L14.4 1.8C8.5-2.7 0 1.6 0 9z"/></svg>;
-const RednoteIcon = () => <svg viewBox="0 0 256 256" width="16" height="16" fill="currentColor"><path d="M29 .3C14 3.5 1.5 15.2 0 31c-1.6 16.3 0 33.6 0 50v102c0 18.8-4.7 44.2 7.3 60C20.4 260 44.2 256 63 256h146c5.8 0 12.3.8 18-.3 15-3.2 27.5-14.9 29-30.7 1.6-16.3 0-33.6 0-50V73c0-18.8 4.7-44.2-7.3-60C235.6-4 211.8 0 193 0H47c-5.8 0-12.3-.8-18 .3M120 91l-7 19h12l-10 24 9 1c-1 2.7-2.3 7.7-4.3 9.8-1.5 1.5-3.8 1.2-5.7 1.2-4.4 0-13.2 1.8-15.5-3-1-2.2.5-5 1.3-7 1.8-4.2 4.2-8.5 5.2-13-2.2 0-4.9.4-7-.3-7.8-2.9.9-15.4 2.7-19.7 1.3-3 2.8-9.6 5.5-11.5C110 88.8 115.9 90.7 120 91m-79 63c2.8 0 6.8.8 8.5-2 1.8-3 .5-9.6.5-13v-33c0-3.1-1.6-12.5 1.2-14.5 2.2-1.6 11.7-1.3 12.6 1.5 1.7 4.5.2 12.2.2 17v32c0 5.5.9 11.9-1.3 17-2.2 4.9-12.3 9.3-17.3 5.5-2.2-1.7-3.8-7.9-4.4-10.5M193 91v5c3.7 0 8.4-.8 12 .3 12 3.7 11 15.4 11 25.7 2 0 4-.2 6 .3 11.5 2.9 10 14.4 10 23.7 0 5-.9 10.8-2.3 15-3.6 4.6-9.5 4-14.7 4-1.6 0-4.3.5-5.7-.5-2.6-1.9-3.8-7.5-4.3-10.5 3.3 0 9.2 1.1 11.8-1.3 3.1-2.9 1.8-14.2-1.8-16.2-1.9-1-4.9-.5-7-.5h-15v29h-14v-29h-14v-14h14v-12h-9V96h9v-5h14m-32 5v14h-8v42h13v13H120l5.3-12.5L138 152v-42h-8V96h31m57 14c0-2.8-.5-6.3.3-9 3.3-10.8 19.6-2.1 11.5 6.8-.9 1-2.5 1.5-3.8 1.8-2.6.6-5.4.4-8 .4M41 110l-4.2 37L30 159l-6-16 3-33h14m46 0 3 33-6 15h-2c-5.4-8.5-6-17.3-7-27-.7-6.9-2-14-2-21h14m106 0v12h9v-12h-9m-75 42-5 13h-17l5.3-13.5L104 151.7z"/></svg>;
-const ModelScopeIcon = () => <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M2.667 5.3H8v2.667H5.333v2.666H2.667V8.467H.5v2.166h2.167V13.3H0V7.967h2.667V5.3zM2.667 13.3h2.666v2.667H8v2.666H2.667V13.3zM8 10.633h2.667V13.3H8v-2.667zM13.333 13.3v2.667h-2.666V13.3h2.666zM13.333 13.3v-2.667H16V13.3h-2.667z"/><path fillRule="evenodd" clipRule="evenodd" d="M21.333 13.3v-2.667h-2.666V7.967H16V5.3h5.333v2.667H24V13.3h-2.667zm0-2.667H23.5V8.467h-2.167v2.166z"/><path d="M21.333 13.3v5.333H16v-2.666h2.667V13.3h2.666z"/></svg>;
+const GithubIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+    <path d="M12 .7a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2.2c-3.4.7-4.1-1.4-4.1-1.4-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.8.1-.8 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.4 3.6 1.1.1-.8.4-1.4.8-1.7-2.7-.3-5.5-1.4-5.5-5.7 0-1.3.4-2.3 1.2-3.1-.1-.3-.5-1.6.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0C17.1 4.7 18 5 18 5c.6 1.5.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.8 5.4-5.5 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .7Z" />
+  </svg>
+);
 
-/* ── Data ── */
-type SocialItem = { platform: string; icon: ReactNode; link: string };
+const MailIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="m4 7 8 6 8-6" />
+  </svg>
+);
+
+const RednoteIcon = () => (
+  <svg viewBox="0 0 256 256" width="18" height="18" fill="currentColor" aria-hidden="true">
+    <path d="M29 .3C14 3.5 1.5 15.2 0 31c-1.6 16.3 0 33.6 0 50v102c0 18.8-4.7 44.2 7.3 60C20.4 260 44.2 256 63 256h146c5.8 0 12.3.8 18-.3 15-3.2 27.5-14.9 29-30.7 1.6-16.3 0-33.6 0-50V73c0-18.8 4.7-44.2-7.3-60C235.6-4 211.8 0 193 0H47c-5.8 0-12.3-.8-18 .3M120 91l-7 19h12l-10 24 9 1c-1 2.7-2.3 7.7-4.3 9.8-1.5 1.5-3.8 1.2-5.7 1.2-4.4 0-13.2 1.8-15.5-3-1-2.2.5-5 1.3-7 1.8-4.2 4.2-8.5 5.2-13-2.2 0-4.9.4-7-.3-7.8-2.9.9-15.4 2.7-19.7 1.3-3 2.8-9.6 5.5-11.5C110 88.8 115.9 90.7 120 91m-79 63c2.8 0 6.8.8 8.5-2 1.8-3 .5-9.6.5-13v-33c0-3.1-1.6-12.5 1.2-14.5 2.2-1.6 11.7-1.3 12.6 1.5 1.7 4.5.2 12.2.2 17v32c0 5.5.9 11.9-1.3 17-2.2 4.9-12.3 9.3-17.3 5.5-2.2-1.7-3.8-7.9-4.4-10.5M193 91v5c3.7 0 8.4-.8 12 .3 12 3.7 11 15.4 11 25.7 2 0 4-.2 6 .3 11.5 2.9 10 14.4 10 23.7 0 5-.9 10.8-2.3 15-3.6 4.6-9.5 4-14.7 4-1.6 0-4.3.5-5.7-.5-2.6-1.9-3.8-7.5-4.3-10.5 3.3 0 9.2 1.1 11.8-1.3 3.1-2.9 1.8-14.2-1.8-16.2-1.9-1-4.9-.5-7-.5h-15v29h-14v-29h-14v-14h14v-12h-9V96h9v-5h14m-32 5v14h-8v42h13v13H120l5.3-12.5L138 152v-42h-8V96h31m57 14c0-2.8-.5-6.3.3-9 3.3-10.8 19.6-2.1 11.5 6.8-.9 1-2.5 1.5-3.8 1.8-2.6.6-5.4.4-8 .4M41 110l-4.2 37L30 159l-6-16 3-33h14m46 0 3 33-6 15h-2c-5.4-8.5-6-17.3-7-27-.7-6.9-2-14-2-21h14m106 0v12h9v-12h-9m-75 42-5 13h-17l5.3-13.5L104 151.7z" />
+  </svg>
+);
+
+const ModelScopeIcon = () => (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+    <path d="M2.667 5.3H8v2.667H5.333v2.666H2.667V8.467H.5v2.166h2.167V13.3H0V7.967h2.667V5.3zM2.667 13.3h2.666v2.667H8v2.666H2.667V13.3zM8 10.633h2.667V13.3H8v-2.667zM13.333 13.3v2.667h-2.666V13.3h2.666zM13.333 13.3v-2.667H16V13.3h-2.667z" />
+    <path fillRule="evenodd" clipRule="evenodd" d="M21.333 13.3v-2.667h-2.666V7.967H16V5.3h5.333v2.667H24V13.3h-2.667zm0-2.667H23.5V8.467h-2.167v2.166z" />
+    <path d="M21.333 13.3v5.333H16v-2.666h2.667V13.3h2.666z" />
+  </svg>
+);
+
+type SocialItem = {platform: string; icon: ReactNode; link: string};
 
 const socials: SocialItem[] = [
-  { platform: 'GitHub', icon: <GithubIcon />, link: 'https://github.com/DjTaNg-404' },
-  { platform: 'Gmail', icon: <MailIcon />, link: 'mailto:djtang404@gmail.com' },
-  { platform: '小红书', icon: <RednoteIcon />, link: 'https://www.xiaohongshu.com/user/profile/5f06dfd90000000001001a86' },
-  { platform: 'ModelScope', icon: <ModelScopeIcon />, link: 'https://www.modelscope.cn/profile/DjTaNg' },
+  {platform: 'GitHub', icon: <GithubIcon />, link: 'https://github.com/DjTaNg-404'},
+  {platform: 'Gmail', icon: <MailIcon />, link: 'mailto:djtang404@gmail.com'},
+  {platform: '小红书', icon: <RednoteIcon />, link: 'https://www.xiaohongshu.com/user/profile/5f06dfd90000000001001a86'},
+  {platform: 'ModelScope', icon: <ModelScopeIcon />, link: 'https://www.modelscope.cn/profile/DjTaNg'},
 ];
 
-type Leaf = { title: string; desc: string; to: string };
+type Leaf = {title: string; desc: string; to: string};
 
 type HomepageLeavesData = {
   productLeaves?: Leaf[];
@@ -30,115 +50,137 @@ type HomepageLeavesData = {
 };
 
 const fallbackProductLeaves: Leaf[] = [
-  { title: 'Desktop-Claw', desc: '小时候想要的虚拟陪伴，我先用一个会思考的桌宠把它做出来。', to: '/docs/products/desktop-claw' },
-  { title: '阿城', desc: '我想做的不是答题机器，而是一个能陪人把学习走下去的搭子。', to: '/docs/products/acheng' },
+  {title: '阿城', desc: '我想做的不是答题机器，而是一个能陪人把学习走下去的搭子。', to: '/docs/products/acheng'},
+  {title: 'Desktop-Claw', desc: '小时候想要的虚拟陪伴，我先用一个会思考的桌宠把它做出来。', to: '/docs/products/desktop-claw'},
 ];
 
 const fallbackDocLeaves: Leaf[] = [
-  { title: 'Agent Runtime', desc: '这篇是我把桌宠真正跑起来之后，对“怎么做内核”的一次整理。', to: '/docs/agent/runtime' },
-  { title: 'Streaming 工程', desc: '我把自己理解流式输出的过程，从最底层通信重新讲了一遍。', to: '/docs/engineering/streaming' },
+  {title: 'Agent Runtime', desc: '这篇是我把桌宠真正跑起来之后，对“怎么做内核”的一次整理。', to: '/docs/agent/runtime'},
+  {title: 'Streaming 工程', desc: '我把自己理解流式输出的过程，从最底层通信重新讲了一遍。', to: '/docs/engineering/streaming'},
 ];
 
 const fallbackBlogLeaves: Leaf[] = [
-  { title: '如何缓解 AI 焦虑', desc: '和老师聊完之后，我开始重新理解怎样和 AI 时代相处。', to: '/blog/ai-anxiety' },
+  {title: '如何缓解 AI 焦虑', desc: '和老师聊完之后，我开始重新理解怎样和 AI 时代相处。', to: '/blog/ai-anxiety'},
 ];
 
 function getLeaves(leaves: Leaf[] | undefined, fallback: Leaf[]) {
   return Array.isArray(leaves) && leaves.length > 0 ? leaves : fallback;
 }
 
-/* ── Component ── */
+function sortProducts(leaves: Leaf[]) {
+  const priority = new Map([
+    ['阿城', 0],
+    ['Desktop-Claw', 1],
+  ]);
+
+  return [...leaves].sort(
+    (a, b) => (priority.get(a.title) ?? 99) - (priority.get(b.title) ?? 99),
+  );
+}
+
 export default function Home(): ReactNode {
   const avatarUrl = useBaseUrl('/img/logo.jpg');
   const homepageLeaves = usePluginData('homepage-leaves') as HomepageLeavesData | undefined;
-  const productLeaves = getLeaves(homepageLeaves?.productLeaves, fallbackProductLeaves);
+  const productLeaves = sortProducts(
+    getLeaves(homepageLeaves?.productLeaves, fallbackProductLeaves),
+  );
   const docLeaves = getLeaves(homepageLeaves?.docLeaves, fallbackDocLeaves);
   const blogLeaves = getLeaves(homepageLeaves?.blogLeaves, fallbackBlogLeaves);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) e.target.classList.add(styles.visible);
-        });
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -30px 0px' },
-    );
-    document.querySelectorAll(`.${styles.reveal}`).forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+  const renderBranches = (leaves: Leaf[], section: 'products' | 'docs' | 'blog') =>
+    leaves.map((leaf, index) => {
+      const isFeatured = section === 'products' && leaf.title === '阿城';
 
-  const renderBranches = (leaves: Leaf[]) =>
-    leaves.map((leaf, i) => (
-      <div
-        key={leaf.to}
-        className={`${styles.branch} ${i % 2 === 0 ? styles.left : styles.right} ${styles.reveal}`}
-      >
-        <Link to={leaf.to} className={styles.leaf}>
-          <h3 className={styles.leafTitle}>{leaf.title}</h3>
-          <p className={styles.leafDesc}>{leaf.desc}</p>
-        </Link>
-      </div>
-    ));
+      return (
+        <article
+          key={leaf.to}
+          className={`${styles.branch} ${index % 2 === 0 ? styles.left : styles.right} ${isFeatured ? styles.featured : ''}`}>
+          <Link to={leaf.to} className={styles.leaf}>
+            {isFeatured ? <span className={styles.primaryLeaf}>第一项目</span> : null}
+            <h3 className={styles.leafTitle}>{leaf.title}</h3>
+            <p className={styles.leafDesc}>{leaf.desc}</p>
+            <span className={styles.leafAction} aria-hidden="true">继续阅读&nbsp; ↗</span>
+          </Link>
+        </article>
+      );
+    });
 
   return (
     <Layout title="首页" description="DjTang 的产品实验与技术沉淀">
       <main className={styles.canvas}>
-        {/* ===== 树冠 (Crown) ===== */}
-        <section className={styles.crown}>
-          <div className={styles.avatarRing}>
-            <img className={styles.avatar} src={avatarUrl} alt="DjTang" />
+        <section className={styles.crown} aria-labelledby="home-title">
+          <div className={styles.crownInner}>
+            <div className={styles.avatarRing}>
+              <img className={styles.avatar} src={avatarUrl} alt="DjTang（子棠）" />
+            </div>
+            <div className={styles.intro}>
+              <h1 id="home-title" className={styles.heroName}>
+                DjTang <span className={styles.subName}>子棠</span>
+              </h1>
+              <p className={styles.identity}>AI 应用开发者 · 教育与陪伴产品探索 · SCAU / CityUHK(DG)</p>
+              <p className={styles.heroStatement}>
+                我在探索教育、陪伴与 AI 应用，也把产品实验和技术过程持续写下来。
+              </p>
+              <nav className={styles.socialRow} aria-label="社交链接">
+                {socials.map((social) => (
+                  <a
+                    key={social.platform}
+                    className={styles.socialIcon}
+                    href={social.link}
+                    target={social.link.startsWith('http') ? '_blank' : undefined}
+                    rel={social.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    aria-label={social.platform}
+                    title={social.platform}>
+                    {social.icon}
+                  </a>
+                ))}
+              </nav>
+            </div>
           </div>
-          <h1 className={styles.heroName}>
-            DjTang
-            <span className={styles.subName}>子棠</span>
-          </h1>
-          <div className={styles.tagRow}>
-            <span className={styles.tag}>AI 应用开发者</span>
-            <span className={styles.tagDot}>·</span>
-            <span className={styles.tag}>教育与陪伴产品探索</span>
-            <span className={styles.tagDot}>·</span>
-            <span className={styles.tag}>SCAU · CityUHK(DG)</span>
-          </div>
-          <nav className={styles.socialRow}>
-            {socials.map((s) => (
-              <a key={s.platform} className={styles.socialIcon} href={s.link} target="_blank" rel="noopener noreferrer" title={s.platform}>
-                {s.icon}
-              </a>
-            ))}
-          </nav>
-          <div className={styles.scrollCue} aria-hidden="true">
-            <span>向下探索</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M19 12l-7 7-7-7" /></svg>
-          </div>
+          <Link className={styles.startLink} to="/docs/products/acheng">
+            从阿城开始
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+              <path d="M5 19 19 5M10 5h9v9" />
+            </svg>
+          </Link>
         </section>
 
-        {/* ===== 树干 (Trunk) ===== */}
-        <div className={styles.trunk}>
-          {/* 产品 */}
-          <div className={`${styles.node} ${styles.reveal}`}><span>产品</span></div>
-          {renderBranches(productLeaves)}
-          <div className={`${styles.more} ${styles.reveal}`}><Link to="/products">查看全部产品 →</Link></div>
+        <div id="journey" className={styles.trunk}>
+          <section className={styles.treeSection} aria-labelledby="products-node">
+            <header className={styles.node}>
+              <span className={styles.nodeDot} aria-hidden="true" />
+              <h2 id="products-node">代表产品</h2>
+            </header>
+            {renderBranches(productLeaves, 'products')}
+            <div className={styles.more}><Link to="/products">查看产品全貌&nbsp; ↗</Link></div>
+          </section>
 
-          {/* 文档 */}
-          <div className={`${styles.node} ${styles.reveal}`}><span>文档</span></div>
-          {renderBranches(docLeaves)}
-          <div className={`${styles.more} ${styles.reveal}`}><Link to="/docs/intro">查看全部文档 →</Link></div>
+          <section className={styles.treeSection} aria-labelledby="docs-node">
+            <header className={styles.node}>
+              <span className={styles.nodeDot} aria-hidden="true" />
+              <h2 id="docs-node">技术沉淀</h2>
+            </header>
+            {renderBranches(docLeaves, 'docs')}
+            <div className={styles.more}><Link to="/docs/intro">进入文档&nbsp; ↗</Link></div>
+          </section>
 
-          {/* 随笔 */}
-          <div className={`${styles.node} ${styles.reveal}`}><span>随笔</span></div>
-          {renderBranches(blogLeaves)}
-          <div className={`${styles.more} ${styles.reveal}`}><Link to="/blog">查看全部随笔 →</Link></div>
+          <section className={styles.treeSection} aria-labelledby="blog-node">
+            <header className={styles.node}>
+              <span className={styles.nodeDot} aria-hidden="true" />
+              <h2 id="blog-node">随笔</h2>
+            </header>
+            {renderBranches(blogLeaves, 'blog')}
+            <div className={styles.more}><Link to="/blog">阅读全部随笔&nbsp; ↗</Link></div>
+          </section>
 
-          {/* ===== 树根 (Roots) ===== */}
-          <div className={`${styles.roots} ${styles.reveal}`}>
-            <svg className={styles.rootsSvg} viewBox="0 0 200 100" fill="none">
-              <path d="M100 0 C100 18 95 36 85 52 C78 64 65 74 50 88" stroke="#2c2c2c" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M100 0 C100 18 105 36 115 52 C122 64 135 74 150 88" stroke="#2c2c2c" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M100 0 C100 14 97 28 90 40 C86 48 80 54 72 60" stroke="#2c2c2c" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
-              <path d="M100 0 C100 14 103 28 110 40 C114 48 120 54 128 60" stroke="#2c2c2c" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
-              <path d="M100 0 C100 22 92 44 78 58" stroke="#2c2c2c" strokeWidth="1" strokeLinecap="round" opacity="0.3" />
-              <path d="M100 0 C100 22 108 44 122 58" stroke="#2c2c2c" strokeWidth="1" strokeLinecap="round" opacity="0.3" />
+          <div className={styles.roots} aria-hidden="true">
+            <svg className={styles.rootsSvg} viewBox="0 0 220 92" fill="none">
+              <path d="M110 0c0 23-9 39-27 50L36 82" />
+              <path d="M110 0c0 23 9 39 27 50l47 32" />
+              <path d="M110 16c-3 20-17 33-41 39L17 67" />
+              <path d="M110 16c3 20 17 33 41 39l52 12" />
+              <path d="M110 37c-9 20-25 33-48 40" />
+              <path d="M110 37c9 20 25 33 48 40" />
             </svg>
           </div>
         </div>

@@ -2,6 +2,7 @@
 sidebar_position: 2
 title: 轻量但可控的 Agent Runtime
 description: 面向桌宠场景拆解轻量、可控、可拓展的 Agent Runtime 设计。
+hide_title: true
 date: 2026-04-12
 homepage_description: 这篇是我把桌宠真正跑起来之后，对“怎么做内核”的一次整理。
 keywords:

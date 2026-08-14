@@ -2,6 +2,7 @@
 sidebar_position: 3
 title: learn-claude-code 学习记录：从 Agent Loop 到 MCP Tools
 description: 阅读 shareAI-lab/learn-claude-code 项目后的学习记录，补充整理从 Agent Loop 到 MCP Tools 的 Harness 工程机制。
+hide_title: true
 date: 2026-05-25
 homepage_description: 从 Agent Loop 到 MCP Tools，我把 learn-claude-code 更新后的 Harness 机制补完了一遍。
 keywords:

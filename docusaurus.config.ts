@@ -45,6 +45,7 @@ const config: Config = {
           showReadingTime: true,
           blogTitle: '随笔',
           blogDescription: '记录个人开发与生活思考',
+          blogSidebarTitle: '最近随笔',
           postsPerPage: 10,
           feedOptions: {
             type: ['rss', 'atom'],
@@ -95,7 +96,7 @@ const config: Config = {
       style: 'light',
       links: [
         {
-          title: '内容',
+          title: '继续探索',
           items: [
             {label: '产品', to: '/products'},
             {label: '文档', to: '/docs/intro'},
@@ -103,13 +104,14 @@ const config: Config = {
           ],
         },
         {
-          title: '代码',
+          title: '与我连接',
           items: [
             {label: 'GitHub', href: githubRepoUrl},
+            {label: '邮件', href: 'mailto:djtang404@gmail.com'},
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} djtang. Built with Docusaurus.`,
+      copyright: `© ${new Date().getFullYear()} DjTang · 持续记录产品实验与技术沉淀`,
     },
     prism: {
       theme: prismThemes.github,

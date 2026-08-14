@@ -1,384 +1,476 @@
-/* ═══════════════════════════════════════
-   Tree Homepage · Ink-wash (水墨) theme
-   ═══════════════════════════════════════ */
-
-/* ── Canvas ── */
 .canvas {
-  background: #f9f7f4;
   min-height: 100vh;
+  overflow: clip;
+  background: var(--paper);
 }
 
-/* ── Crown (树冠) ── */
 .crown {
-  min-height: calc(100vh - 5rem);
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  display: grid;
+  min-height: clamp(28rem, 58vh, 36rem);
+  place-items: center;
+  padding: clamp(3rem, 7vw, 6rem) 1.25rem 5.75rem;
+}
+
+.crown::after {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  height: 4.5rem;
+  background: var(--line-strong);
+  content: '';
+}
+
+.crownInner {
+  display: grid;
+  width: min(100%, 58rem);
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 2rem 1rem 3rem;
-  text-align: center;
 }
 
 .avatarRing {
   position: relative;
-  width: 136px;
-  height: 136px;
+  width: 8.5rem;
+  height: 8.5rem;
 }
 
 .avatarRing::before {
-  content: '';
   position: absolute;
-  inset: -7px;
+  inset: -0.65rem;
+  border: 1px solid var(--line-strong);
+  border-right-color: transparent;
   border-radius: 50%;
-  border: 3px solid transparent;
-  border-top-color: #2c2c2c;
-  border-right-color: #2c2c2c;
-  border-bottom-color: rgba(44, 44, 44, 0.15);
-  transform: rotate(-30deg);
+  content: '';
+  transform: rotate(-22deg);
+}
+
+.avatarRing::after {
+  position: absolute;
+  right: -0.75rem;
+  bottom: 0.8rem;
+  width: 0.58rem;
+  height: 0.58rem;
+  border-radius: 50%;
+  background: var(--indigo);
+  content: '';
 }
 
 .avatar {
-  width: 136px;
-  height: 136px;
+  display: block;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  display: block;
+  filter: saturate(0.82) contrast(0.96);
+}
+
+.intro {
+  max-width: 41rem;
 }
 
 .heroName {
   margin: 0;
-  font-family: Georgia, 'Noto Serif SC', 'Source Han Serif SC', serif;
-  font-size: 2.6rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  letter-spacing: 0.06em;
-  line-height: 1.2;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 7vw, 5.4rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 0.98;
 }
 
 .subName {
-  display: block;
-  font-size: 1.05rem;
-  font-weight: 400;
-  color: #777;
-  letter-spacing: 0.22em;
-  margin-top: 0.25rem;
+  margin-left: 0.42em;
+  color: var(--ink-soft);
+  font-size: 0.38em;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  vertical-align: 0.18em;
 }
 
-.tagRow {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
+.identity {
+  margin: 1.2rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  letter-spacing: 0.035em;
+  line-height: 1.7;
 }
 
-.tag {
-  font-size: 0.88rem;
-  color: #555;
-  letter-spacing: 0.03em;
-}
-
-.tagDot {
-  color: #bbb;
-  user-select: none;
+.heroStatement {
+  max-width: 34rem;
+  margin: 0.7rem 0 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.08rem, 2vw, 1.32rem);
+  line-height: 1.75;
+  text-wrap: balance;
 }
 
 .socialRow {
   display: flex;
-  gap: 0.9rem;
-  margin-top: 0.4rem;
+  gap: 0.5rem;
+  margin-top: 1.45rem;
 }
 
 .socialIcon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1.5px solid #3a3a3a;
-  display: flex;
+  display: inline-flex;
+  width: 2.75rem;
+  height: 2.75rem;
   align-items: center;
   justify-content: center;
-  color: #2c2c2c;
-  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
-  text-decoration: none !important;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease;
 }
 
 .socialIcon:hover {
-  background: #2c2c2c;
-  color: #f9f7f4;
-  transform: translateY(-2px);
+  border-color: var(--indigo);
+  background: var(--paper-raised);
+  color: var(--indigo);
+  text-decoration: none;
 }
 
-.scrollCue {
-  margin-top: 2rem;
-  display: flex;
-  flex-direction: column;
+.startLink {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  z-index: 1;
+  display: inline-flex;
+  min-height: 2.75rem;
   align-items: center;
-  gap: 0.35rem;
-  color: #aaa;
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
-  animation: softBounce 2.4s ease-in-out infinite;
+  gap: 0.5rem;
+  padding: 0 0.6rem;
+  background: var(--paper);
+  color: var(--indigo);
+  font-size: 0.86rem;
+  font-weight: 650;
+  text-underline-offset: 0.25em;
+  transform: translateX(-50%);
 }
 
-@keyframes softBounce {
-  0%, 100% { transform: translateY(0); opacity: 0.7; }
-  50% { transform: translateY(6px); opacity: 1; }
-}
-
-/* ── Trunk (树干) ── */
 .trunk {
   position: relative;
-  max-width: 800px;
+  width: min(100% - 2rem, 58rem);
   margin: 0 auto;
-  padding: 0 1rem 3rem;
+  padding: 0 0 4rem;
 }
 
 .trunk::before {
-  content: '';
   position: absolute;
-  left: 50%;
   top: 0;
   bottom: 0;
-  width: 3px;
-  background: linear-gradient(to bottom, #2c2c2c 0%, #2c2c2c 88%, transparent 100%);
-  transform: translateX(-50%);
-  border-radius: 2px;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--indigo) 0 25%, var(--line-strong) 45% 90%, transparent);
+  content: '';
+  transform-origin: top;
+  animation: growSpine 1.3s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* ── Section Node (节点标签) ── */
+@keyframes growSpine {
+  from {
+    clip-path: inset(0 0 100%);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+.treeSection {
+  position: relative;
+  padding-top: clamp(3.5rem, 7vw, 5.5rem);
+}
+
 .node {
   position: relative;
   z-index: 2;
   display: flex;
-  justify-content: center;
-  margin: 3rem 0 1.5rem;
+  width: max-content;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 auto 2.25rem;
+  padding: 0.3rem 0.7rem;
+  background: var(--paper);
 }
 
-.node span {
-  background: #f9f7f4;
-  border: 2px solid #2c2c2c;
-  border-radius: 20px;
-  padding: 0.3rem 1.2rem;
-  font-family: Georgia, 'Noto Serif SC', serif;
-  font-size: 0.92rem;
-  font-weight: 700;
-  color: #2c2c2c;
-  letter-spacing: 0.05em;
+.node h2 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
 }
 
-/* ── Branch (树枝 + 叶片卡片) ── */
+.nodeDot {
+  width: 0.48rem;
+  height: 0.48rem;
+  border: 1px solid var(--ink-soft);
+  border-radius: 50%;
+  background: var(--paper);
+}
+
+.treeSection:first-child .nodeDot {
+  border-color: var(--indigo);
+  background: var(--indigo);
+}
+
 .branch {
   position: relative;
   width: 50%;
-  margin-bottom: 1rem;
-  padding: 0.5rem 0;
+  min-height: 9.5rem;
+  padding: 0.75rem 2.6rem 1.5rem 0;
 }
 
-/* 节点圆点 */
-.branch::after {
-  content: '';
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #2c2c2c;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-}
-
-/* 枝线 */
 .branch::before {
-  content: '';
   position: absolute;
-  top: 50%;
-  height: 2px;
-  background: #2c2c2c;
-  z-index: 1;
+  top: 1.45rem;
+  right: 0;
+  width: 2rem;
+  height: 1px;
+  background: var(--line-strong);
+  content: '';
 }
 
-/* 左枝 */
-.left {
-  margin-left: 0;
-  margin-right: auto;
-  padding-right: 36px;
+.branch::after {
+  position: absolute;
+  top: 1.18rem;
+  right: -0.32rem;
+  width: 0.62rem;
+  height: 0.62rem;
+  border: 1px solid var(--ink-soft);
+  border-radius: 50%;
+  background: var(--paper);
+  content: '';
 }
 
-.left::after {
-  right: -5px;
-}
-
-.left::before {
-  right: 5px;
-  width: 26px;
-}
-
-/* 右枝 */
 .right {
-  margin-left: auto;
-  margin-right: 0;
-  padding-left: 36px;
-}
-
-.right::after {
-  left: -5px;
+  margin-left: 50%;
+  padding-right: 0;
+  padding-left: 2.6rem;
 }
 
 .right::before {
-  left: 5px;
-  width: 26px;
+  right: auto;
+  left: 0;
 }
 
-/* ── Leaf (叶片卡片) ── */
+.right::after {
+  right: auto;
+  left: -0.32rem;
+}
+
+.featured::after {
+  border-color: var(--indigo);
+  background: var(--indigo);
+  box-shadow: 0 0 0 0.28rem var(--paper), 0 0 0 0.34rem var(--indigo-soft);
+}
+
+.featured::before {
+  background: var(--indigo);
+}
+
 .leaf {
   display: block;
-  padding: 1.1rem 1.3rem;
-  background: rgba(255, 253, 250, 0.92);
-  border: 1px solid rgba(180, 170, 155, 0.35);
-  border-radius: 14px;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
-  text-decoration: none !important;
-  color: inherit !important;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-height: 7.1rem;
+  padding: 0.15rem 0 1.05rem;
+  border-bottom: 1px solid var(--line);
+  color: inherit;
+  text-decoration: none;
 }
 
 .leaf:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
-  color: inherit !important;
+  border-color: var(--indigo);
+  color: inherit;
+  text-decoration: none;
+}
+
+.primaryLeaf {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--indigo);
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
 }
 
 .leafTitle {
   margin: 0;
-  font-family: Georgia, 'Noto Serif SC', serif;
-  font-size: 1.02rem;
-  font-weight: 700;
-  color: #1a1a1a;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.6vw, 1.65rem);
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.featured .leafTitle {
+  color: var(--indigo);
+  font-size: clamp(1.55rem, 3vw, 2rem);
 }
 
 .leafDesc {
-  margin: 0.4rem 0 0;
-  font-size: 0.86rem;
-  color: #666;
-  line-height: 1.55;
+  margin: 0.55rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.91rem;
+  line-height: 1.75;
 }
 
-/* ── View More ── */
+.leafAction {
+  display: inline-block;
+  margin-top: 0.75rem;
+  color: var(--ink-faint);
+  font-size: 0.78rem;
+}
+
+.leaf:hover .leafAction {
+  color: var(--indigo);
+}
+
 .more {
   position: relative;
   z-index: 2;
   display: flex;
   justify-content: center;
-  margin: 0.3rem 0 1.5rem;
+  margin-top: 0.5rem;
 }
 
 .more a {
-  background: #f9f7f4;
-  color: #666;
-  font-size: 0.85rem;
-  text-decoration: none;
-  padding: 0.2rem 0.7rem;
-  border-radius: 10px;
-  transition: color 0.2s ease;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: 0 0.65rem;
+  background: var(--paper);
+  color: var(--ink-soft);
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-decoration-color: transparent;
 }
 
 .more a:hover {
-  color: #1a1a1a;
+  color: var(--indigo);
+  text-decoration-color: currentColor;
 }
 
-/* ── Roots (树根) ── */
 .roots {
   position: relative;
-  z-index: 2;
+  z-index: 1;
   display: flex;
   justify-content: center;
-  margin-top: 1rem;
-  padding-bottom: 2rem;
+  padding-top: 3.5rem;
+  background: var(--paper);
+  color: var(--line-strong);
 }
 
 .rootsSvg {
-  width: 160px;
-  height: auto;
-  opacity: 0.5;
+  width: 13.75rem;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1;
 }
 
-/* ── Scroll Reveal Animation ── */
-.reveal {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.65s ease, transform 0.65s ease;
-}
-
-.left.reveal {
-  transform: translateX(-20px);
-  opacity: 0;
-}
-
-.right.reveal {
-  transform: translateX(20px);
-  opacity: 0;
-}
-
-.visible {
-  opacity: 1 !important;
-  transform: translate(0, 0) !important;
-}
-
-/* ── Responsive ── */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 700px) {
   .crown {
-    min-height: calc(100vh - 4rem);
-    gap: 0.8rem;
+    min-height: 35rem;
+    padding-top: 3.75rem;
   }
 
-  .avatarRing,
-  .avatar {
-    width: 110px;
-    height: 110px;
+  .crownInner {
+    grid-template-columns: 1fr;
+    gap: 1.8rem;
+    justify-items: start;
+  }
+
+  .avatarRing {
+    width: 6.6rem;
+    height: 6.6rem;
+    margin-left: 0.55rem;
   }
 
   .heroName {
-    font-size: 2rem;
+    font-size: clamp(2.6rem, 14vw, 4rem);
   }
 
-  .tagRow {
-    gap: 0.3rem;
+  .subName {
+    display: block;
+    margin: 0.55rem 0 0;
+    font-size: 0.3em;
   }
 
-  .tag {
-    font-size: 0.82rem;
+  .identity {
+    max-width: 22rem;
   }
 
+  .heroStatement {
+    max-width: 22rem;
+  }
+
+  .startLink {
+    left: 1rem;
+    transform: none;
+  }
+
+  .crown::after,
   .trunk::before {
-    left: 22px;
+    left: 1.1rem;
   }
 
-  .branch {
-    width: calc(100% - 56px);
-    margin-left: 56px !important;
-    margin-right: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+  .trunk {
+    width: min(100% - 2rem, 36rem);
+    margin-left: 1rem;
   }
 
-  .branch::after {
-    left: -39px !important;
-    right: auto !important;
+  .node {
+    margin-right: 0;
+    margin-left: 0.46rem;
   }
 
-  .branch::before {
-    left: -34px !important;
-    right: auto !important;
-    width: 30px !important;
+  .branch,
+  .right {
+    width: calc(100% - 1.1rem);
+    min-height: auto;
+    margin: 0 0 1.7rem 1.1rem;
+    padding: 0 0 0 2rem;
   }
 
-  .left.reveal,
-  .right.reveal {
-    transform: translateX(16px);
+  .branch::before,
+  .right::before {
+    top: 1.1rem;
+    right: auto;
+    left: 0;
+    width: 1.55rem;
+  }
+
+  .branch::after,
+  .right::after {
+    top: 0.83rem;
+    right: auto;
+    left: -0.32rem;
   }
 
   .leaf {
-    text-align: left;
+    min-height: auto;
+  }
+
+  .more {
+    justify-content: flex-start;
+    margin-left: 0.5rem;
+  }
+
+  .roots {
+    justify-content: flex-start;
+    padding-left: 0.4rem;
+  }
+
+  .rootsSvg {
+    width: 10rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trunk::before {
+    animation: none;
   }
 }

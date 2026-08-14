@@ -4,8 +4,9 @@ description: 陪你规划，陪你思考，陪你坚持
 sidebar_position: 1
 date: 2026-04-12
 homepage_featured: true
-homepage_rank: 2
+homepage_rank: 1
 homepage_description: 我想做的不是答题机器，而是一个能陪人把学习走下去的搭子。
+hide_title: true
 keywords:
   - 阿城
   - ChatTutor
@@ -67,15 +68,14 @@ export function Gallery({items, columns = 3}) {
 }
 
 <div className={styles.hero}>
-  <p className={styles.kicker}>Product Doc</p>
   <h1 className={styles.heroTitle}>阿城：陪你规划，陪你思考，陪你坚持</h1>
-  <p className={styles.subtitle}>
+  <div className={styles.subtitle}>
     阿城是一款沉浸式桌宠 AI 学习搭子，把任务规划、启发式问答、阶段总结和知识沉淀整合进同一条学习流里。
     这一页作为产品详情页接入博客，承载产品介绍、使用说明、系统架构与核心能力说明。
-  </p>
+  </div>
   <div className={styles.actions}>
-    <Link className="button button--primary" to="/products">
-      返回产品区
+    <Link className={styles.backLink} to="/products">
+      ← 返回产品区
     </Link>
   </div>
   <div className={styles.metaGrid}>

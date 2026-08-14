@@ -1,0 +1,134 @@
+.header {
+  max-width: 46rem;
+  margin: 1.5rem 0 clamp(3rem, 7vw, 5rem);
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.title {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(2.7rem, 7vw, 5rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.description {
+  max-width: 42rem;
+  margin: 1rem 0 0;
+  color: var(--ink-soft);
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.archive {
+  position: relative;
+}
+
+.yearGroup {
+  display: grid;
+  grid-template-columns: 5rem minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+.yearMarker {
+  position: relative;
+  padding-top: 0.2rem;
+}
+
+.yearMarker::after {
+  position: absolute;
+  top: 2.9rem;
+  bottom: 0;
+  left: 1.3rem;
+  width: 1px;
+  background: var(--line);
+  content: '';
+}
+
+.yearMarker h2 {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding-top: 3.2rem;
+  color: var(--ink-faint);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+}
+
+.yearRing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 1px solid var(--indigo);
+  border-radius: 50%;
+}
+
+.yearRing::before,
+.yearRing::after {
+  position: absolute;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  content: '';
+}
+
+.yearRing::before {
+  inset: 0.38rem;
+}
+
+.yearRing::after {
+  inset: 0.82rem;
+  border-color: var(--indigo);
+  background: var(--indigo);
+}
+
+.yearPosts {
+  min-width: 0;
+}
+
+@media screen and (max-width: 700px) {
+  .header {
+    margin-top: 0.75rem;
+  }
+
+  .yearGroup {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .yearMarker {
+    display: flex;
+    min-height: 2.6rem;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .yearMarker::after {
+    top: 1.3rem;
+    right: 0;
+    bottom: auto;
+    left: 3.5rem;
+    width: auto;
+    height: 1px;
+  }
+
+  .yearMarker h2 {
+    z-index: 2;
+    padding: 0 0.4rem;
+    background: var(--paper);
+  }
+
+  .yearRing {
+    position: relative;
+    top: auto;
+    left: auto;
+    z-index: 2;
+    flex: 0 0 2.6rem;
+  }
+}

@@ -1,118 +1,271 @@
-/* ── Products · Ink-wash Style ── */
-
 .surface {
-  padding: 2rem 0 4rem;
+  min-height: 100vh;
+  padding: clamp(3rem, 7vw, 6rem) 1rem 6rem;
+  background: var(--paper);
 }
 
 .wrap {
-  display: grid;
-  gap: 1.4rem;
-  max-width: 860px;
+  width: min(100%, 66rem);
   margin: 0 auto;
 }
 
-.headCard {
-  border: 1px solid rgba(180, 170, 155, 0.3);
-  border-radius: 14px;
-  background: rgba(255, 253, 250, 0.92);
-  padding: 2rem 2rem 1.8rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-  text-align: center;
-}
-
-.kicker {
-  margin: 0;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: #999;
-  font-weight: 600;
-  font-family: Georgia, 'Noto Serif SC', serif;
+.header {
+  display: grid;
+  max-width: 50rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem 2rem;
+  align-items: end;
+  padding-bottom: clamp(3rem, 7vw, 5.5rem);
 }
 
 .title {
-  margin: 0.6rem 0 0;
-  color: #1a1a1a;
-  font-family: Georgia, 'Noto Serif SC', serif;
-  font-size: 1.8rem;
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 7vw, 5rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
 }
 
 .subtitle {
-  margin: 0.75rem 0 1.2rem;
-  color: #666;
-  font-size: 0.95rem;
-  line-height: 1.65;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.2rem;
-}
-
-.slotCard {
-  border: 1px solid rgba(180, 170, 155, 0.3);
-  border-radius: 14px;
-  background: rgba(255, 253, 250, 0.92);
-  padding: 1.4rem;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
-}
-
-.slotCard:hover {
-  border-color: rgba(44, 44, 44, 0.2);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
-}
-
-.slotTitle {
+  max-width: 42rem;
   margin: 0;
-  color: #1a1a1a;
-  font-size: 1.12rem;
-  font-family: Georgia, 'Noto Serif SC', serif;
+  color: var(--ink-soft);
+  font-size: 1.02rem;
+  line-height: 1.9;
 }
 
-.stage {
-  margin: 0.5rem 0 0;
-  display: inline-block;
-  border-radius: 6px;
-  background: rgba(44, 44, 44, 0.06);
-  color: #666;
-  padding: 0.18rem 0.6rem;
-  font-size: 0.72rem;
-  font-weight: 600;
-}
-
-.note {
-  margin: 0.75rem 0 0;
-  color: #555;
-  line-height: 1.65;
-  font-size: 0.92rem;
-}
-
-.slotLink {
+.startLink {
   display: inline-flex;
-  margin-top: 1rem;
-  font-weight: 700;
-  color: #2c2c2c;
-  font-family: Georgia, 'Noto Serif SC', serif;
-  text-decoration: none;
-  border-bottom: 1.5px solid rgba(44, 44, 44, 0.25);
-  padding-bottom: 1px;
-  transition: border-color 0.2s;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--indigo);
+  font-size: 0.88rem;
+  font-weight: 650;
+  white-space: nowrap;
+  text-underline-offset: 0.28em;
 }
 
-.slotLink:hover {
-  color: #1a1a1a;
-  border-color: #1a1a1a;
-  text-decoration: none;
+.productTree {
+  position: relative;
 }
 
-@media screen and (max-width: 996px) {
-  .grid {
+.productTree::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 7.25rem;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--indigo), var(--line-strong) 55%, transparent);
+  content: '';
+}
+
+.product {
+  position: relative;
+  display: grid;
+  grid-template-columns: 7.25rem minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  padding: 0 0 clamp(5rem, 10vw, 8rem);
+}
+
+.branchMark {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.8rem;
+}
+
+.branchMark::after {
+  position: absolute;
+  top: 1rem;
+  right: -0.34rem;
+  width: 0.68rem;
+  height: 0.68rem;
+  border: 1px solid var(--ink-soft);
+  border-radius: 50%;
+  background: var(--paper);
+  content: '';
+}
+
+.primaryProduct .branchMark::after {
+  border-color: var(--indigo);
+  background: var(--indigo);
+  box-shadow: 0 0 0 0.3rem var(--paper), 0 0 0 0.36rem var(--indigo-soft);
+}
+
+.branchMark span {
+  margin-right: 1.25rem;
+  color: var(--ink-faint);
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.primaryProduct .branchMark span {
+  color: var(--indigo);
+}
+
+.productContent {
+  min-width: 0;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.productTitle {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+}
+
+.primaryProduct .productTitle {
+  color: var(--indigo);
+}
+
+.thesis {
+  max-width: 43rem;
+  margin: 1rem 0 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.3vw, 1.4rem);
+  line-height: 1.75;
+  text-wrap: balance;
+}
+
+.summary {
+  max-width: 46rem;
+  margin: 0.85rem 0 0;
+  color: var(--ink-soft);
+  line-height: 1.85;
+}
+
+.mechanism {
+  display: flex;
+  align-items: center;
+  margin: clamp(2.2rem, 5vw, 3.6rem) 0 2rem;
+  overflow-x: auto;
+  padding: 0.25rem 0 0.75rem;
+  scrollbar-width: thin;
+}
+
+.mechanismStep {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+}
+
+.mechanismNode {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.3rem;
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-size: 0.81rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.primaryProduct .mechanismNode:first-child {
+  border-color: var(--indigo);
+  color: var(--indigo);
+}
+
+.mechanismArrow {
+  width: 2.75rem;
+  flex: 0 0 2.75rem;
+  stroke: var(--line-strong);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1;
+}
+
+.productFooter {
+  display: flex;
+  gap: 1rem 2rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.evidence {
+  color: var(--ink-faint);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.productLink {
+  display: inline-flex;
+  min-height: 2.75rem;
+  flex: 0 0 auto;
+  align-items: center;
+  color: var(--indigo);
+  font-size: 0.88rem;
+  font-weight: 650;
+  text-underline-offset: 0.28em;
+}
+
+@media screen and (max-width: 760px) {
+  .surface {
+    padding-top: 3.25rem;
+  }
+
+  .header {
     grid-template-columns: 1fr;
   }
 
-  .headCard {
-    padding: 1.4rem;
+  .productTree::before {
+    left: 0.4rem;
+  }
+
+  .product {
+    grid-template-columns: 1fr;
+    gap: 1.4rem;
+    padding-left: 2rem;
+  }
+
+  .branchMark {
+    justify-content: flex-start;
+    padding-top: 0;
+  }
+
+  .branchMark::after {
+    top: 0.35rem;
+    right: auto;
+    left: -1.93rem;
+  }
+
+  .branchMark span {
+    margin: 0;
+  }
+
+  .mechanism {
+    display: grid;
+    overflow: visible;
+  }
+
+  .mechanismStep {
+    display: grid;
+    justify-items: start;
+  }
+
+  .mechanismArrow {
+    width: 1rem;
+    height: 2.2rem;
+    margin-left: 1.1rem;
+    transform: rotate(90deg);
+  }
+
+  .productFooter {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
