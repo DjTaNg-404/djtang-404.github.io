@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1800" viewBox="0 0 1200 1800" role="img" aria-labelledby="title description">
+  <title id="title">面向游戏的模块化 AI 架构</title>
+  <desc id="description">游戏提供事实，通过统一 AI Gateway 将请求分发至专用 Pipeline。每条 Pipeline 按需选用 Agent Harness 组件，并使用共享上下文、状态和模型调用服务。AI 返回文本或结构化结果，游戏负责最终校验与执行。三条管线为组件组合示意。</desc>
+  <defs>
+    <style>
+      text { font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; fill: #352e2b; }
+      .muted { fill: #82766e; }
+      .purple { fill: #715672; }
+      .green { fill: #38695e; }
+      .heading { font-weight: 700; }
+      .flow { fill: none; stroke: #715672; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+      .assembly { fill: none; stroke: #927495; stroke-width: 2.5; stroke-dasharray: 7 7; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+    <marker id="purple-arrow" viewBox="0 0 12 12" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L11 6 L1 11 Z" fill="#715672"/>
+    </marker>
+    <marker id="assembly-arrow" viewBox="0 0 12 12" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L11 6 L1 11 Z" fill="#927495"/>
+    </marker>
+    <marker id="green-arrow" viewBox="0 0 12 12" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 L11 6 L1 11 Z" fill="#73978a"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="1800" fill="#f8f3ea"/>
+
+  <!-- 标题 -->
+  <rect x="60" y="45" width="7" height="84" rx="3.5" fill="#a77a42"/>
+  <text x="84" y="87" font-size="49" class="heading">面向游戏的模块化 AI 架构</text>
+  <text x="85" y="127" font-size="26" class="muted">专用 Pipeline · 可组合 Harness · 游戏侧最终裁决</text>
+  <path d="M60 153 H1140" stroke="#dcd1c4" stroke-width="1.5"/>
+
+  <!-- 游戏世界的事实回流，不代表自动再次调用模型 -->
+  <path d="M60 1573 H28 V238 H58" fill="none" stroke="#73978a" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#green-arrow)"/>
+  <rect x="10" y="809" width="36" height="278" fill="#f8f3ea"/>
+  <text transform="translate(35 948) rotate(-90)" text-anchor="middle" font-size="22" fill="#628779">新事实供后续请求使用</text>
+
+  <!-- 游戏侧入口 -->
+  <rect x="60" y="184" width="1080" height="112" rx="18" fill="#e9e0d4"/>
+  <rect x="60" y="180" width="1080" height="112" rx="18" fill="#fffdf8" stroke="#a8beb0" stroke-width="2"/>
+  <rect x="60" y="198" width="5" height="76" rx="2.5" fill="#38695e"/>
+  <text x="89" y="224" font-size="30" class="heading green">游戏侧 Gate · 事实输入</text>
+  <text x="1110" y="223" text-anchor="end" font-size="24" class="green">先校验玩法条件</text>
+  <text x="90" y="265" font-size="27">玩家输入 / 游戏事件　 ·　 世界事实　 ·　 调用条件</text>
+
+  <!-- AI 是逻辑职责区域，不标注部署形式 -->
+  <rect x="60" y="330" width="1080" height="1030" rx="23" fill="#eee7ee" stroke="#c2aec3" stroke-width="2"/>
+  <text x="90" y="377" font-size="29" class="heading purple">AI 能力系统</text>
+  <text x="91" y="413" font-size="23" class="purple">专用流程 · 共享机制</text>
+
+  <!-- Gateway -->
+  <path d="M600 292 V352" class="flow" marker-end="url(#purple-arrow)"/>
+  <rect x="390" y="354" width="420" height="84" rx="14" fill="#fffdf9" stroke="#a58aa7" stroke-width="2"/>
+  <text x="600" y="390" text-anchor="middle" font-size="31" class="heading purple">AI Gateway</text>
+  <text x="600" y="421" text-anchor="middle" font-size="23" class="muted">请求管理 · 能力分发</text>
+  <path d="M600 438 V480 M240 480 H960 M240 480 V510 M600 480 V510 M960 480 V510" class="flow"/>
+  <path d="M240 497 V510" class="flow" marker-end="url(#purple-arrow)"/>
+  <path d="M600 497 V510" class="flow" marker-end="url(#purple-arrow)"/>
+  <path d="M960 497 V510" class="flow" marker-end="url(#purple-arrow)"/>
+  <text x="855" y="467" font-size="22" class="purple">按用途选择管线</text>
+
+  <!-- Pipeline A -->
+  <g id="pipeline-a">
+    <rect x="90" y="516" width="300" height="318" rx="16" fill="#ded0df"/>
+    <rect x="90" y="512" width="300" height="318" rx="16" fill="#fffdf9" stroke="#ad93af" stroke-width="2"/>
+    <path d="M106 512 H374 Q390 512 390 528 V576 H90 V528 Q90 512 106 512 Z" fill="#725775"/>
+    <text x="112" y="554" font-size="30" fill="#fffdf9" class="heading" style="fill:#fffdf9">Pipeline A</text>
+    <text x="240" y="612" text-anchor="middle" font-size="24">上下文 · 提示词</text>
+    <text x="240" y="647" text-anchor="middle" font-size="24">模型调用 · 结果处理</text>
+    <path d="M110 670 H370" stroke="#e1d7df" stroke-width="1.5"/>
+    <text x="111" y="700" font-size="22" class="muted">选用的 Harness</text>
+    <rect x="110" y="718" width="260" height="42" rx="9" fill="#dfeee5" stroke="#b0c9b9"/>
+    <circle cx="129" cy="739" r="4.5" fill="#38695e"/>
+    <text x="240" y="747" text-anchor="middle" font-size="24" style="fill:#38695e" class="heading">安全检查</text>
+    <rect x="110" y="770" width="260" height="42" rx="9" fill="#e0ebf4" stroke="#adc4d6"/>
+    <circle cx="129" cy="791" r="4.5" fill="#3e6b89"/>
+    <text x="240" y="799" text-anchor="middle" font-size="24" style="fill:#3e6b89" class="heading">流式守卫</text>
+  </g>
+
+  <!-- Pipeline B: 更少的组件也可以构成一条专用管线 -->
+  <g id="pipeline-b">
+    <rect x="450" y="516" width="300" height="318" rx="16" fill="#ded0df"/>
+    <rect x="450" y="512" width="300" height="318" rx="16" fill="#fffdf9" stroke="#ad93af" stroke-width="2"/>
+    <path d="M466 512 H734 Q750 512 750 528 V576 H450 V528 Q450 512 466 512 Z" fill="#725775"/>
+    <text x="472" y="554" font-size="30" fill="#fffdf9" class="heading" style="fill:#fffdf9">Pipeline B</text>
+    <text x="600" y="612" text-anchor="middle" font-size="24">上下文 · 提示词</text>
+    <text x="600" y="647" text-anchor="middle" font-size="24">模型调用 · 结果处理</text>
+    <path d="M470 670 H730" stroke="#e1d7df" stroke-width="1.5"/>
+    <text x="471" y="700" font-size="22" class="muted">选用的 Harness</text>
+    <rect x="470" y="744" width="260" height="42" rx="9" fill="#dfeee5" stroke="#b0c9b9"/>
+    <circle cx="489" cy="765" r="4.5" fill="#38695e"/>
+    <text x="600" y="773" text-anchor="middle" font-size="24" style="fill:#38695e" class="heading">安全检查</text>
+  </g>
+
+  <!-- Pipeline C -->
+  <g id="pipeline-c">
+    <rect x="810" y="516" width="300" height="318" rx="16" fill="#ded0df"/>
+    <rect x="810" y="512" width="300" height="318" rx="16" fill="#fffdf9" stroke="#ad93af" stroke-width="2"/>
+    <path d="M826 512 H1094 Q1110 512 1110 528 V576 H810 V528 Q810 512 826 512 Z" fill="#725775"/>
+    <text x="832" y="554" font-size="30" fill="#fffdf9" class="heading" style="fill:#fffdf9">Pipeline C</text>
+    <text x="960" y="612" text-anchor="middle" font-size="24">上下文 · 提示词</text>
+    <text x="960" y="647" text-anchor="middle" font-size="24">模型调用 · 结果处理</text>
+    <path d="M830 670 H1090" stroke="#e1d7df" stroke-width="1.5"/>
+    <text x="831" y="700" font-size="22" class="muted">选用的 Harness</text>
+    <rect x="830" y="718" width="260" height="42" rx="9" fill="#dfeee5" stroke="#b0c9b9"/>
+    <circle cx="849" cy="739" r="4.5" fill="#38695e"/>
+    <text x="960" y="747" text-anchor="middle" font-size="24" style="fill:#38695e" class="heading">安全检查</text>
+    <rect x="830" y="770" width="260" height="42" rx="9" fill="#f6e6c5" stroke="#d7b77e"/>
+    <circle cx="849" cy="791" r="4.5" fill="#936829"/>
+    <text x="960" y="799" text-anchor="middle" font-size="24" style="fill:#936829" class="heading">轮数预算</text>
+  </g>
+
+  <!-- 组件选用关系：与实线请求流明确区分 -->
+  <path d="M600 904 V870 M240 870 H960 M240 870 V836 M600 870 V836 M960 870 V836" class="assembly"/>
+  <path d="M240 852 V834" class="assembly" marker-end="url(#assembly-arrow)"/>
+  <path d="M600 852 V834" class="assembly" marker-end="url(#assembly-arrow)"/>
+  <path d="M960 852 V834" class="assembly" marker-end="url(#assembly-arrow)"/>
+  <rect x="90" y="904" width="1020" height="155" rx="16" fill="#fcf9fc" stroke="#bda8bf" stroke-width="2"/>
+  <text x="112" y="946" font-size="30" class="heading purple">可组合 Agent Harness</text>
+  <text x="1088" y="943" text-anchor="end" font-size="23" class="purple">组件库 · 按需选用</text>
+  <rect x="112" y="971" width="225" height="46" rx="9" fill="#dfeee5" stroke="#b0c9b9"/>
+  <text x="224.5" y="1002" text-anchor="middle" font-size="24" style="fill:#38695e" class="heading">安全检查</text>
+  <rect x="353" y="971" width="225" height="46" rx="9" fill="#e0ebf4" stroke="#adc4d6"/>
+  <text x="465.5" y="1002" text-anchor="middle" font-size="24" style="fill:#3e6b89" class="heading">流式守卫</text>
+  <rect x="594" y="971" width="225" height="46" rx="9" fill="#f6e6c5" stroke="#d7b77e"/>
+  <text x="706.5" y="1002" text-anchor="middle" font-size="24" style="fill:#936829" class="heading">轮数预算</text>
+  <rect x="835" y="971" width="253" height="46" rx="9" fill="#ece8e1" stroke="#c8bfb3"/>
+  <text x="961.5" y="1002" text-anchor="middle" font-size="24" style="fill:#796e61" class="heading">呈现降级 · …</text>
+  <text x="112" y="1042" font-size="21" class="muted">同色标签表示复用同一组件实现</text>
+
+  <!-- 共享服务不是必须串行经过的处理步骤 -->
+  <text x="91" y="1094" font-size="25" class="heading purple">共享支撑 · 各 Pipeline 按需使用</text>
+  <rect x="90" y="1110" width="494" height="142" rx="14" fill="#fffdf9" stroke="#c2aec3" stroke-width="2"/>
+  <text x="112" y="1152" font-size="28" class="heading purple">Runtime / Context</text>
+  <text x="112" y="1192" font-size="24">历史 · 记忆 · 执行状态</text>
+  <text x="112" y="1228" font-size="24" class="muted">Storage · 状态持久化</text>
+  <rect x="604" y="1110" width="506" height="142" rx="14" fill="#fffdf9" stroke="#c2aec3" stroke-width="2"/>
+  <text x="626" y="1152" font-size="28" class="heading purple">LLM 调用链</text>
+  <text x="626" y="1192" font-size="24">计量 · 重试 · 熔断 · 并发</text>
+  <text x="626" y="1228" font-size="24" class="muted">LLM Client ↔ 模型服务</text>
+  <rect x="90" y="1274" width="1020" height="58" rx="12" fill="#e5e0e5"/>
+  <text x="112" y="1312" font-size="25" class="heading purple">观测与诊断</text>
+  <text x="1088" y="1312" text-anchor="end" font-size="25" class="purple">Local Trace · Health</text>
+
+  <!-- 返回的是候选结果，游戏仍是玩法状态的写入者 -->
+  <path d="M600 1360 V1458" class="flow" marker-end="url(#purple-arrow)"/>
+  <rect x="522" y="1393" width="156" height="34" rx="6" fill="#f8f3ea"/>
+  <text x="600" y="1418" text-anchor="middle" font-size="24" class="purple">能力结果</text>
+  <rect x="60" y="1464" width="1080" height="212" rx="18" fill="#e9e0d4"/>
+  <rect x="60" y="1460" width="1080" height="212" rx="18" fill="#fffdf8" stroke="#9bb8a8" stroke-width="2"/>
+  <rect x="60" y="1478" width="5" height="176" rx="2.5" fill="#38695e"/>
+  <text x="90" y="1506" font-size="30" class="heading green">游戏运行时 · 结果裁决</text>
+  <rect x="795" y="1478" width="319" height="44" rx="9" fill="#38695e"/>
+  <text x="954.5" y="1508" text-anchor="middle" font-size="25" style="fill:#fffdf8" class="heading">游戏保留最终裁决权</text>
+  <rect x="90" y="1538" width="430" height="82" rx="11" fill="#eef4ee"/>
+  <text x="109" y="1572" font-size="27" class="heading green">生成文本</text>
+  <text x="109" y="1605" font-size="24" class="green">审查后的内容 → 展示</text>
+  <rect x="540" y="1538" width="570" height="82" rx="11" fill="#eef4ee"/>
+  <text x="559" y="1572" font-size="27" class="heading green">结构化结果</text>
+  <text x="559" y="1605" font-size="24" class="green">游戏规则二次校验 → 确定性执行</text>
+  <text x="90" y="1652" font-size="24" class="green">更新玩法状态 · 供后续请求读取</text>
+
+  <!-- 图例 -->
+  <path d="M62 1726 H112" class="flow" marker-end="url(#purple-arrow)"/>
+  <text x="128" y="1734" font-size="22" class="muted">请求 / 结果</text>
+  <path d="M409 1726 H459" class="assembly" marker-end="url(#assembly-arrow)"/>
+  <text x="475" y="1734" font-size="22" class="muted">组件选用</text>
+  <text x="1140" y="1734" text-anchor="end" font-size="22" class="muted">架构与组件组合示意</text>
+  <text x="61" y="1771" font-size="22" class="muted">A / B / C 可替换为业务所需的专用能力，各管线独立组织上下文与输出契约。</text>
+</svg>

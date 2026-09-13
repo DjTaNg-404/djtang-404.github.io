@@ -19,7 +19,8 @@ keywords:
 1. [阿城：陪你规划，陪你思考，陪你坚持](./products/acheng) — 先从完整产品出发，了解桌宠形态的 AI 学习搭子。
 2. [Desktop-Claw](./products/desktop-claw) — 再看桌面陪伴如何继续延伸到轻量 Agent Runtime。
 3. [轻量但可控的 Agent Runtime](./agent/runtime) — 从 Gateway、任务调度和 Agent Loop 理解运行时内核。
-4. [流式输出：从 HTTP 到 SSE 再到 WebSocket](./engineering/streaming) — 回到更具体的前后端工程链路。
+4. [为游戏设计一套 AI 系统：专用 Pipeline 与可组合 Harness](./agent/game-ai-architecture) — 进一步了解游戏 AI 的职责边界、专用能力流程与公共组件复用。
+5. [流式输出：从 HTTP 到 SSE 再到 WebSocket](./engineering/streaming) — 回到更具体的前后端工程链路。
 
 ## 按主题浏览
 
