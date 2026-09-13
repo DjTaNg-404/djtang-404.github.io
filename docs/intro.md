@@ -16,6 +16,8 @@ keywords:
 
 ## 建议阅读路线
 
+入门推荐：[从大模型到 AI Agent：一文捋清模型、产品、框架与协议](./agent/ai-agent-ecosystem) — 先分清模型、产品、框架、Runtime 与协议，再沿着下面的路线阅读。
+
 1. [阿城：陪你规划，陪你思考，陪你坚持](./products/acheng) — 先从完整产品出发，了解桌宠形态的 AI 学习搭子。
 2. [Desktop-Claw](./products/desktop-claw) — 再看桌面陪伴如何继续延伸到轻量 Agent Runtime。
 3. [轻量但可控的 Agent Runtime](./agent/runtime) — 从 Gateway、任务调度和 Agent Loop 理解运行时内核。
